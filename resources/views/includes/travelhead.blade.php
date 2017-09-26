@@ -146,6 +146,18 @@ body{
                     @endif
                     @endif
 
+                    @if(Auth::user()->type == 'Car Hire')
+                    @if(collect(request()->segments())->last() == 'carhires')
+                    <li class="active">
+                        <a href="{{url('carhires')}}"><i class="fa fa-car"></i> <span class="nav-label">Cars</span></a>
+                    </li>
+                    @else
+                    <li>
+                        <a href="{{url('carhires')}}"><i class="fa fa-car"></i> <span class="nav-label">Cars</span></a>
+                    </li>
+                    @endif
+                    @endif
+
                     @if(Auth::user()->type == 'Hotel')
                     @if(collect(request()->segments())->last() == 'hotelbranches' || collect(request()->segments())->last() == 'pricing' || collect(request()->segments())->last() == 'hotelrooms' || collect(request()->segments())->last() == 'roomtype' || collect(request()->segments())->last() == 'deposits')
                     <li class="active">

@@ -204,9 +204,17 @@
                                         <h3 id="title" class="m-t-none m-b">Booking</h3>
                                         <table class="table table-bordered table-hover">
 
+                                        @if(Auth::user()->type == 'Car Hire')
+                                            <tr>
+                                               <td><strong>Receipt No : </strong></td><td class="tdticket"></td>
+                                            </tr>
+
+                                        @else
                                             <tr>
                                                <td><strong>Ticket No : </strong></td><td class="tdticket"></td>
                                             </tr>
+
+                                        @endif
 
                                             @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
                                             <tr>
@@ -228,16 +236,33 @@
                                             </tr>
                                             @endif
 
-                                            <tr>
-                                            @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
-                                               <td><strong>Travel Date : </strong></td>
+                                            
+                                            @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
+                                               <tr>
+                                                <td><strong>Travel Date : </strong></td>
+                                                <td class="tdtravel"></td>
+                                               </tr>
                                             @elseif(Auth::user()->type == 'Events')
+                                            <tr>
                                                <td><strong>Event Date : </strong></td>
-                                            @elseif(Auth::user()->type == 'Hotel')
-                                               <td><strong>Check-In Date/Time : </strong></td>
-                                            @endif
                                                <td class="tdtravel"></td>
                                             </tr>
+                                            @elseif(Auth::user()->type == 'Hotel')
+                                            <tr>
+                                               <td><strong>Check-In Date/Time : </strong></td>
+                                               <td class="tdtravel"></td>
+                                            </tr>
+                                            @elseif(Auth::user()->type == 'Car Hire')
+                                            <tr>
+                                               <td><strong>Start Date : </strong></td>
+                                               <td class="tdstartdate"></td>
+                                            </tr>
+                                            <tr>
+                                               <td><strong>End Date : </strong></td>
+                                               <td class="tdenddate"></td>
+                                            </tr>
+                                            @endif
+                                               
 
                                             <tr>
                                                <td><strong>Date Booked : </strong></td><td class="tddate"></td>
@@ -270,7 +295,11 @@
       <thead style="background:#263949">
 
         <th style="color:#FFF">#</th>
+        @if(Auth::user()->type == 'Car Hire')
+        <th style="color:#FFF">Receipt No.</th>
+        @else
         <th style="color:#FFF">Ticket No.</th>
+        @endif
         @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
         <th style="color:#FFF">Vehicle</th>
         @elseif(Auth::user()->type == 'Events')
@@ -278,15 +307,18 @@
         
         @endif
         <th style="color:#FFF">Customer</th>
-        @if(Auth::user()->type != 'Events'  && Auth::user()->type != 'Hotel')
+        @if(Auth::user()->type != 'Events'  && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
         <th style="color:#FFF">Seat No.</th>
         @endif
-        @if(Auth::user()->type != 'Events'  && Auth::user()->type != 'Hotel')
+        @if(Auth::user()->type != 'Events'  && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
         <th style="color:#FFF">Travel Date</th>
         @elseif(Auth::user()->type == 'Events')
         <th style="color:#FFF">Event Date</th>
         @elseif(Auth::user()->type == 'Hotel')
         <th style="color:#FFF">Check-In Date/Time</th>
+        @elseif(Auth::user()->type == 'Car Hire')
+        <th style="color:#FFF">Start Date</th>
+        <th style="color:#FFF">End Date</th>
         @endif
         <th style="color:#FFF">Date Booked</th>
         <th style="color:#FFF">Status</th>
@@ -307,10 +339,15 @@
           <td>{{App\Booking::getEvent($booking->event_id)->name}}</td>
           @endif
           <td>{{$booking->firstname.' '.$booking->lastname}}</td>
-          @if(Auth::user()->type != 'Events'  && Auth::user()->type != 'Hotel')
+          @if(Auth::user()->type != 'Events'  && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
           <td>{{$booking->seatno}}</td>
           @endif
+          @if(Auth::user()->type != 'Car Hire')
           <td>{{$booking->travel_date}}</td>
+          @else
+          <td>{{$booking->start_date}}</td>
+          <td>{{$booking->end_date}}</td>
+          @endif
           <td>{{$booking->date}}</td>
           <td>{{$booking->status}}</td>
           <td>{{number_format($booking->amount,2)}}</td>
@@ -322,12 +359,15 @@
                   </button>
           
                   <ul class="dropdown-menu" role="menu">
-                    @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
+                    @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
                     <li><a class="view" data-toggle="modal" data-ticket="{{$booking->ticketno}}" data-vehicle="{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name}}" data-customer="{{$booking->firstname.' '.$booking->lastname}}" data-seat="{{$booking->seatno}}" data-travel="{{$booking->travel_date}}" data-date="{{$booking->date}}" data-status="{{$booking->status}}" data-amount="{{number_format($booking->amount,2)}}"  data-id="{{$booking->id}}" href="#modal-view">View</a></li>
                     @elseif(Auth::user()->type == 'Events')
                     <li><a class="view" data-toggle="modal" data-ticket="{{$booking->ticketno}}" data-event="{{App\Booking::getEvent($booking->event_id)->name}}" data-customer="{{$booking->firstname.' '.$booking->lastname}}" data-seat="{{$booking->seatno}}" data-travel="{{$booking->travel_date}}" data-date="{{$booking->date}}" data-status="{{$booking->status}}" data-amount="{{number_format($booking->amount,2)}}"  data-id="{{$booking->id}}" href="#modal-view">View</a></li>
                     @elseif(Auth::user()->type == 'Hotel')
                     <li><a class="view" data-toggle="modal" data-ticket="{{$booking->ticketno}}" data-customer="{{$booking->firstname.' '.$booking->lastname}}" data-seat="{{$booking->seatno}}" data-travel="{{$booking->travel_date}}" data-date="{{$booking->date}}" data-status="{{$booking->status}}" data-amount="{{number_format($booking->amount,2)}}"  data-id="{{$booking->id}}" href="#modal-view">View</a></li>
+
+                    @elseif(Auth::user()->type == 'Car Hire')
+                    <li><a class="view" data-toggle="modal" data-ticket="{{$booking->ticketno}}" data-vehicle="{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name}}" data-customer="{{$booking->firstname.' '.$booking->lastname}}" data-startdate="{{$booking->start_date}}" data-enddate="{{$booking->end_date}}" data-date="{{$booking->date}}" data-status="{{$booking->status}}" data-amount="{{number_format($booking->amount,2)}}"  data-id="{{$booking->id}}" href="#modal-view">View</a></li>
                     @endif
                     <li><a class="sreport" data-toggle="modal" data-id="{{$booking->id}}" href="#modal-singlereport">Report</a></li>
                     
@@ -368,6 +408,8 @@
      var customer = $(this).data('customer');
      var seat = $(this).data('seat');
      var travel = $(this).data('travel');
+     var start_date = $(this).data('startdate');
+     var end_date = $(this).data('enddate');
      var date = $(this).data('date');
      var status = $(this).data('status');
      var amount = $(this).data('amount');
@@ -382,6 +424,8 @@
      $(".modal-body .tdcustomer").html( customer );
      $(".modal-body .tdseat").html( seat );
      $(".modal-body .tdtravel").html( travel );
+     $(".modal-body .tdstartdate").html( start_date );
+     $(".modal-body .tdenddate").html( end_date );
      $(".modal-body .tddate").html( date );
      $(".modal-body .tdstatus").html( status );
      $(".modal-body .tdamount").html("{{$currency}} "+ amount );

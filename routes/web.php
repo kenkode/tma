@@ -118,6 +118,21 @@ Route::get('/', function () {
                      ->sum('amount');
 
     return view('hotels.dashboard',compact('bookings','schedules','organization','rooms','foods','branches','destinations','customers','payments'));
+    }else if(Auth::user()->type == 'Car Hire'){
+    $bookings = App\Booking::where('organization_id',Auth::user()->organization_id)->where('status','approved')->count();
+    $organization = App\Organization::find(Auth::user()->organization_id);
+    $carhires = App\Carhire::where('organization_id',Auth::user()->organization_id)->count();
+    $schedules = App\Schedule::where('organization_id',Auth::user()->organization_id)->count();
+    $customers = DB::table('bookings')
+                     ->select(DB::raw('DISTINCT(CONCAT(firstname, id_number))'))
+                     ->where('organization_id',Auth::user()->organization_id)
+                     ->count();
+    $payments = DB::table('bookings')
+                     ->where('organization_id',Auth::user()->organization_id)
+                     ->where('status','approved')
+                     ->sum('amount');
+
+    return view('carhires.dashboard',compact('bookings','schedules','organization','carhires','customers','payments'));
     }
     }else{
     return view('auth.login');
@@ -223,6 +238,21 @@ Route::get('/dashboard', function () {
                      ->sum('amount');
 
     return view('hotels.dashboard',compact('bookings','schedules','organization','rooms','foods','branches','destinations','customers','payments'));
+    }else if(Auth::user()->type == 'Car Hire'){
+    $bookings = App\Booking::where('organization_id',Auth::user()->organization_id)->where('status','approved')->count();
+    $organization = App\Organization::find(Auth::user()->organization_id);
+    $carhires = App\Carhire::where('organization_id',Auth::user()->organization_id)->count();
+    $schedules = App\Schedule::where('organization_id',Auth::user()->organization_id)->count();
+    $customers = DB::table('bookings')
+                     ->select(DB::raw('DISTINCT(CONCAT(firstname, id_number))'))
+                     ->where('organization_id',Auth::user()->organization_id)
+                     ->count();
+    $payments = DB::table('bookings')
+                     ->where('organization_id',Auth::user()->organization_id)
+                     ->where('status','approved')
+                     ->sum('amount');
+
+    return view('carhires.dashboard',compact('bookings','schedules','organization','carhires','customers','payments'));
     }    
 });
 
@@ -279,6 +309,13 @@ Route::post('events/store', 'EventsController@store');
 Route::post('events/update', 'EventsController@update');
 Route::post('events/delete', 'EventsController@delete');
 Route::post('report/events', 'ReportsController@events');
+
+Route::get('carhires', 'CarHireController@index');
+Route::get('carhires/showrecord', 'CarHireController@showrecord');
+Route::post('carhires/store', 'CarHireController@store');
+Route::post('carhires/update', 'CarHireController@update');
+Route::post('carhires/delete', 'CarHireController@delete');
+Route::post('report/carhires', 'ReportsController@carhires');
 
 Route::get('currencies', 'CurrenciesController@index');
 Route::get('currencies/showrecord', 'CurrenciesController@showrecord');
@@ -615,6 +652,18 @@ Route::get('/login/{success}', function ($success) {
     $success = "Successfully registered organization! Please wait for confirmation from the admin";
     return view('auth.login',compact('success'));
 });
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');

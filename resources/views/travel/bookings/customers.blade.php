@@ -195,9 +195,16 @@
                                         <h3 id="title" class="m-t-none m-b">Customer</h3>
                                         <table class="table table-bordered table-hover">
 
+                                        @if(Auth::user()->type == 'Car Hire')
+                                            <tr>
+                                               <td><strong>Receipt No : </strong></td><td class="tdticket"></td>
+                                            </tr>
+
+                                        @else
                                             <tr>
                                                <td><strong>Ticket No : </strong></td><td class="tdticket"></td>
                                             </tr>
+                                        @endif
 
                                             <tr>
                                                <td><strong>First name : </strong></td><td class="tdfname"></td>
@@ -237,7 +244,11 @@
       <thead style="background:#263949">
 
         <th style="color:#FFF">#</th>
+        @if(Auth::user()->type == 'Car Hire')
+        <th style="color:#FFF">Receipt No.</th>
+        @else
         <th style="color:#FFF">Ticket No.</th>
+        @endif
         <th style="color:#FFF">Firstname</th>
         <th style="color:#FFF">Lastname</th>
         <th style="color:#FFF">Email</th>

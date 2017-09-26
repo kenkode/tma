@@ -138,6 +138,7 @@
                                                 <option value="Airline">Airline</option>
                                                 <option value="Hotel">Hotel</option>
                                                 <option value="Events">Events</option>
+                                                <option value="Car Hire">Car Hire</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">

@@ -29,6 +29,8 @@ class CreateBookingsTable extends Migration
             $table->string("origin")->nullable();
             $table->string("destination")->nullable();
             $table->datetime("travel_date")->nullable();
+            $table->datetime("start_date")->nullable();
+            $table->datetime("end_date")->nullable();
             $table->datetime("arrival")->nullable();
             $table->datetime("departure")->nullable();
             $table->string("seatno")->nullable();

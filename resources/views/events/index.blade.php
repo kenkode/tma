@@ -75,7 +75,7 @@
                                              <p id="dateerror" style="color:red"></p>
                                              </div>
                                              <div class="form-group"><label>Booking Slots</label> 
-                                             <input type="text" id="slots" placeholder="Enter Booking Slots Available" class="form-control"></textarea>
+                                             <input type="text" id="slots" placeholder="Enter Booking Slots Available" class="form-control"/>
                                              <p id="slotserrors" style="color:red"></p>
                                              </div>
                                              <div class="form-group"><label>Contact</label> 

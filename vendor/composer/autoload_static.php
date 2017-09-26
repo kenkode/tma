@@ -4,15 +4,15 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b
+class ComposerStaticInit5bf389334bf34c2e7fb113d54a0f02e0
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '1d1b89d124cc9cb8219922c9d5569199' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest.php',
+        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
-        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
@@ -87,6 +87,7 @@ class ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b
             'Dotenv\\' => 7,
             'Dompdf\\' => 7,
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Common\\Inflector\\' => 26,
             'DeepCopy\\' => 9,
         ),
         'C' => 
@@ -240,6 +241,10 @@ class ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
         ),
+        'Doctrine\\Common\\Inflector\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Common/Inflector',
+        ),
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
@@ -311,19 +316,13 @@ class ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b
                 0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
             ),
         ),
-        'D' => 
-        array (
-            'Doctrine\\Common\\Inflector\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/inflector/lib',
-            ),
-        ),
     );
 
     public static $classMap = array (
         'Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'CreateBookingsTable' => __DIR__ . '/../..' . '/database/migrations/2017_03_22_134532_create_bookings_table.php',
         'CreateBranchesTable' => __DIR__ . '/../..' . '/database/migrations/2017_03_22_155923_create_branches_table.php',
+        'CreateCarhiresTable' => __DIR__ . '/../..' . '/database/migrations/2017_09_24_144615_create_carhires_table.php',
         'CreateCurrenciesTable' => __DIR__ . '/../..' . '/database/migrations/2017_04_07_113942_create_currencies_table.php',
         'CreateDefaultamountsTable' => __DIR__ . '/../..' . '/database/migrations/2017_06_17_161038_create_defaultamounts_table.php',
         'CreateDepositsTable' => __DIR__ . '/../..' . '/database/migrations/2017_06_17_094216_create_deposits_table.php',
@@ -452,9 +451,12 @@ class ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b
         'Maatwebsite\\Excel\\Writers\\CellWriter' => __DIR__ . '/..' . '/maatwebsite/excel/src/Maatwebsite/Excel/Writers/CellWriter.php',
         'Maatwebsite\\Excel\\Writers\\LaravelExcelWriter' => __DIR__ . '/..' . '/maatwebsite/excel/src/Maatwebsite/Excel/Writers/LaravelExcelWriter.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/Assert.php',
+        'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/AssertionFailedError.php',
         'PHPUnit\\Framework\\BaseTestListener' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/BaseTestListener.php',
+        'PHPUnit\\Framework\\Test' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/Test.php',
         'PHPUnit\\Framework\\TestCase' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/TestCase.php',
         'PHPUnit\\Framework\\TestListener' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/TestListener.php',
+        'PHPUnit\\Framework\\TestSuite' => __DIR__ . '/..' . '/phpunit/phpunit/src/ForwardCompatibility/TestSuite.php',
         'PHPUnit_Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit_Extensions_GroupTestSuite' => __DIR__ . '/..' . '/phpunit/phpunit/src/Extensions/GroupTestSuite.php',
         'PHPUnit_Extensions_PhptTestCase' => __DIR__ . '/..' . '/phpunit/phpunit/src/Extensions/PhptTestCase.php',
@@ -916,10 +918,10 @@ class ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit6e14fd3f2c1085e1c8a833f4c8d1c77b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5bf389334bf34c2e7fb113d54a0f02e0::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5bf389334bf34c2e7fb113d54a0f02e0::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit5bf389334bf34c2e7fb113d54a0f02e0::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit5bf389334bf34c2e7fb113d54a0f02e0::$classMap;
 
         }, null, ClassLoader::class);
     }

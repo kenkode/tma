@@ -21,9 +21,9 @@
                  {{ Session::get('flash_message') }}
                 </div>
                  @endif
-
                     <form class="m-t" role="form" method="POST" action="{{ url('/login') }}">
                         {{ csrf_field() }}
+
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                             @if ($errors->has('name'))
                                     <span class="help-block">
@@ -60,7 +60,7 @@
                                 </div>
                         </div>
 
-                                <button type="submit" id="submit" class="btn btn-primary block full-width m-b">Login</button>
+                        <button type="submit" id="submit" class="btn btn-primary block full-width m-b">Login</button>
 
                                 <a href="{{ url('/password/reset') }}">
                                     <small>Forgot Your Password?</small>
@@ -78,5 +78,4 @@
             </div>
         </div>
     </div>
-
 @endsection
