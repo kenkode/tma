@@ -32,7 +32,7 @@ body {
 
 
 
- @page { margin: 50px 30px; }
+ @page  { margin: 50px 30px; }
  .header { position: fixed; left: 0px; top: 0px; right: 0px; height: 150px;  text-align: center; }
  .content {margin-top: 10px; }
  .footer { position: fixed; left: 0px; bottom: -180px; right: 0px; height: 50px;  }
@@ -55,21 +55,22 @@ body {
        
         <td style="width:150px">
 
-            @if($organization->logo == null || $organization->logo == '')
-            @else
-            <img src="{{public_path().'/uploads/logo/'.$organization->logo}}" alt="logo" width="80%" alt="no logo">
-            @endif
+            <?php if($organization->logo == null || $organization->logo == ''): ?>
+            <?php else: ?>
+            <img src="<?php echo e(public_path().'/uploads/logo/'.$organization->logo); ?>" alt="logo" width="80%" alt="no logo">
+            <?php endif; ?>
 
     
         </td>
 
         <td>
         <strong>
-          {{ strtoupper($organization->name)}}<br>
+          <?php echo e(strtoupper($organization->name)); ?><br>
           </strong>
-          {{ $organization->phone}}<br>
-          {{ $organization->email}}<br>
-          {{ $organization->address}}
+          <?php echo e($organization->phone); ?><br>
+          <?php echo e($organization->email); ?><br>
+          <?php echo e($organization->address); ?>
+
        
 
         </td>
@@ -86,18 +87,18 @@ body {
  
 	<div class="content" style='margin-top:50px;'>
  
-   <div align="center"><h3><strong>Booking report for period {{$from}} and {{$to}}</strong></h3></div>
+   <div align="center"><h3><strong>Booking report for period <?php echo e($from); ?> and <?php echo e($to); ?></strong></h3></div>
     <table class="table table-bordered" border='1' cellspacing='0' cellpadding='0'>
 
       <tr>
      
 
         <td><strong>#</strong></td>
-        @if(Auth::user()->type == 'Car Hire')
+        <?php if(Auth::user()->type == 'Car Hire'): ?>
         <td><strong>Receipt No.</strong></td>
-        @else
+        <?php else: ?>
         <td><strong>Ticket No.</strong></td>
-        @endif
+        <?php endif; ?>
         <td><strong>Firstname</strong></td>
         <td><strong>Lastname</strong></td>
         <td><strong>Email</strong></td>
@@ -106,19 +107,19 @@ body {
       </tr>
       <?php $i =1; 
       ?>
-      @foreach($bookings as $booking)
+      <?php $__currentLoopData = $bookings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $booking): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
       <tr>
-          <td valign="top">{{$i}}</td>
-          <td valign="top">{{$booking->ticketno}}</td>
-          <td valign="top">{{$booking->firstname}}</td>
-          <td valign="top">{{$booking->lastname}}</td>
-          <td valign="top">{{$booking->email}}</td>
-          <td valign="top">{{$booking->id_number}}</td>
-          <td valign="top">{{$booking->phone}}</td>
+          <td valign="top"><?php echo e($i); ?></td>
+          <td valign="top"><?php echo e($booking->ticketno); ?></td>
+          <td valign="top"><?php echo e($booking->firstname); ?></td>
+          <td valign="top"><?php echo e($booking->lastname); ?></td>
+          <td valign="top"><?php echo e($booking->email); ?></td>
+          <td valign="top"><?php echo e($booking->id_number); ?></td>
+          <td valign="top"><?php echo e($booking->phone); ?></td>
       <?php
        $i++; ?>
    
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
    
       
     </table>

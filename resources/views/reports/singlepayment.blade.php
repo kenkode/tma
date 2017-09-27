@@ -94,8 +94,12 @@ body {
    <div align="center"><h3><strong>Payment report for {{$booking->ticketno}}</strong></h3></div>
     <table class="table table-bordered" border='1' cellspacing='0' cellpadding='0'>
 
-      <tr><td><strong>Ticket No.</strong></td><td>{{$booking->ticketno}}</td></tr><tr>
-        @if(Auth::user()->type == 'Travel' || Auth::user()->type == 'Taxi')
+      @if(Auth::user()->type == 'Car Hire')
+      <tr><td><strong>Receipt No.</strong></td><td>{{$booking->ticketno}}</td></tr><tr>
+        @else
+        <tr><td><strong>Ticket No.</strong></td><td>{{$booking->ticketno}}</td></tr><tr>
+        @endif
+        @if(Auth::user()->type == 'Travel' || Auth::user()->type == 'Taxi' || Auth::user()->type == 'Car Hire')
         <td><strong>Vehicle</strong></td>
         @elseif(Auth::user()->type == 'SGR')
         <td><strong>Train</strong></td>
@@ -109,6 +113,8 @@ body {
         <td>{{App\Booking::getEvent($booking->event_id)->name}}</td>
         @elseif(Auth::user()->type == 'Hotel')
         <td></td>
+        @elseif(Auth::user()->type == 'Car Hire')
+        <td>{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->type}}</td>
         @else
         <td>{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name}}</td>
         @endif

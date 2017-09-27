@@ -230,7 +230,7 @@
                                                <td><strong>Customer : </strong></td><td class="tdcustomer"></td>
                                             </tr>
 
-                                            @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
+                                            @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
                                             <tr>
                                                <td><strong>Seat No : </strong></td><td class="tdseat"></td>
                                             </tr>
@@ -332,9 +332,10 @@
         <tr class="{{'del'.$booking->id}}">
           <td>{{$i}}</td>
           <td>{{$booking->ticketno}}</td>
-          @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
+          @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
           <td>{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name}}</td>
-          
+          @elseif(Auth::user()->type == 'Car Hire')
+          <td>{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->type}}</td>
           @elseif(Auth::user()->type == 'Events')
           <td>{{App\Booking::getEvent($booking->event_id)->name}}</td>
           @endif
@@ -367,7 +368,7 @@
                     <li><a class="view" data-toggle="modal" data-ticket="{{$booking->ticketno}}" data-customer="{{$booking->firstname.' '.$booking->lastname}}" data-seat="{{$booking->seatno}}" data-travel="{{$booking->travel_date}}" data-date="{{$booking->date}}" data-status="{{$booking->status}}" data-amount="{{number_format($booking->amount,2)}}"  data-id="{{$booking->id}}" href="#modal-view">View</a></li>
 
                     @elseif(Auth::user()->type == 'Car Hire')
-                    <li><a class="view" data-toggle="modal" data-ticket="{{$booking->ticketno}}" data-vehicle="{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name}}" data-customer="{{$booking->firstname.' '.$booking->lastname}}" data-startdate="{{$booking->start_date}}" data-enddate="{{$booking->end_date}}" data-date="{{$booking->date}}" data-status="{{$booking->status}}" data-amount="{{number_format($booking->amount,2)}}"  data-id="{{$booking->id}}" href="#modal-view">View</a></li>
+                    <li><a class="view" data-toggle="modal" data-ticket="{{$booking->ticketno}}" data-vehicle="{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->type}}" data-customer="{{$booking->firstname.' '.$booking->lastname}}" data-startdate="{{$booking->start_date}}" data-enddate="{{$booking->end_date}}" data-date="{{$booking->date}}" data-status="{{$booking->status}}" data-amount="{{number_format($booking->amount,2)}}"  data-id="{{$booking->id}}" href="#modal-view">View</a></li>
                     @endif
                     <li><a class="sreport" data-toggle="modal" data-id="{{$booking->id}}" href="#modal-singlereport">Report</a></li>
                     

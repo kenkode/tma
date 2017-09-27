@@ -13,6 +13,7 @@ use App\Currency;
 use App\Payment;
 use App\Schedule;
 use App\Event;
+use App\Carhire;
 use App\Booking;
 use App\Organization;
 use App\Deposit;
@@ -738,6 +739,98 @@ class ReportsController extends Controller
     }
     }
 
+    public function carhires(Request $request){
+        if($request->type == 'pdf'){
+        $carhires = Carhire::where('organization_id',Auth::user()->organization_id)->get();
+        $organization = Organization::find(Auth::user()->organization_id);
+        $pdf = PDF::loadView('reports.carhires',compact('carhires','organization'));
+        return $pdf->download('cars.pdf');
+    }else{
+        $data = Carhire::where('organization_id',Auth::user()->organization_id)->get();
+
+        $organization = Organization::find(Auth::user()->organization_id);
+        
+
+    
+  Excel::create('Cars Report', function($excel) use($data,$organization) {
+
+    
+    $excel->sheet('Cars Report', function($sheet) use($data,$organization){
+
+
+               $sheet->row(1, array(
+               'Organization: ',$organization->name
+               ));
+              
+              $sheet->cell('A1', function($cell) {
+
+               // manipulate the cell
+                $cell->setFontWeight('bold');
+
+              });
+
+              $sheet->mergeCells('A3:H3');
+              $sheet->row(3, array(
+              'Cars Report'
+              ));
+
+              $sheet->row(3, function($cell) {
+
+               // manipulate the cell
+                $cell->setAlignment('center');
+                $cell->setFontWeight('bold');
+
+              });
+              
+              $currency = '';
+
+              if($organization->currency_shortname == null || $organization->currency_shortname == ''){
+              $currency = 'KES';
+              }else{
+              $currency = $organization->currency_shortname;
+              }
+
+              $name = '';
+
+              $sheet->row(5, array(
+              '#', 'Registration Number','Car Type','Capacity','Location','Price ('.$currency.')'
+              ));
+
+              $sheet->row(5, function ($r) {
+
+             // call cell manipulation methods
+              $r->setFontWeight('bold');
+ 
+              });
+               
+            $row = 6;
+            $pricetotal = 0;
+             
+             for($i = 0; $i<count($data); $i++){
+             $sheet->row($row, array(
+             $i+1,$data[$i]->regno,$data[$i]->type,$data[$i]->capacity,$data[$i]->location,$data[$i]->price
+             ));
+             $pricetotal = $pricetotal + $data[$i]->price;
+             $row++;
+             }  
+
+             $sheet->row($row, array(
+             '','','','','Total',$pricetotal
+             ));
+             $sheet->row($row, function ($r) {
+
+             // call cell manipulation methods
+              $r->setFontWeight('bold');
+ 
+              });
+                      
+             
+    });
+
+  })->download('xls');
+    }
+    }
+
     public function bookings(Request $request){
         if($request->type == 'pdf'){
         $from = $request->from;
@@ -841,6 +934,10 @@ class ReportsController extends Controller
               $sheet->row(7, array(
               '#', 'Ticket No.','Customer','Check-In Date/Time','Date Booked','Amount ('.$currency.')'
               ));
+              }else if (Auth::user()->type == 'Car Hire') {
+              $sheet->row(7, array(
+              '#', 'Receipt No.','Vehicle','Customer','Start Date','End Date','Date Booked','Amount ('.$currency.')'
+              ));
               }else{
                $sheet->row(7, array(
               '#', 'Ticket No.',$name,'Customer','Seat No.','Travel Date','Date Booked','Amount ('.$currency.')'
@@ -865,6 +962,10 @@ class ReportsController extends Controller
              }else if (Auth::user()->type == 'Hotel') {
               $sheet->row($row, array(
               $i+1,$data[$i]->ticketno,$data[$i]->firstname.' '.$data[$i]->lastname,$data[$i]->travel_date,$data[$i]->date,$data[$i]->amount
+             ));
+             }else if (Auth::user()->type == 'Car Hire') {
+              $sheet->row($row, array(
+              $i+1,$data[$i]->ticketno,Booking::getVehicle($data[$i]->vehicle_id)->regno.' '.Booking::getVehicle($data[$i]->vehicle_id)->type,$data[$i]->firstname.' '.$data[$i]->lastname,$data[$i]->start_date,$data[$i]->end_date,$data[$i]->date,$data[$i]->amount
              ));
              }else{
               $sheet->row($row, array(
@@ -969,11 +1070,19 @@ class ReportsController extends Controller
               $name = 'Event';
               }elseif (Auth::user()->type == 'Hotel') {
               $name = 'Hotel';
+              }elseif (Auth::user()->type == 'Car Hire') {
+              $name = 'Vehicle';
               }
 
+              if (Auth::user()->type == 'Car Hire') {
+              $sheet->row(5, array(
+               'Receipt No : ',$data->ticketno
+               ));
+              }else{
               $sheet->row(5, array(
                'Ticket No : ',$data->ticketno
                ));
+              }
 
               if (Auth::user()->type == 'Events') {
               $sheet->row(6, array(
@@ -981,6 +1090,10 @@ class ReportsController extends Controller
                ));
               }else if (Auth::user()->type == 'Hotel') {
               
+              }else if (Auth::user()->type == 'Car Hire') {
+               $sheet->row(6, array(
+               $name.' : ',Booking::getVehicle($data->vehicle_id)->regno.' '.Booking::getVehicle($data->vehicle_id)->type
+               )); 
               }else{
                $sheet->row(6, array(
                $name.' : ',Booking::getVehicle($data->vehicle_id)->regno.' '.Booking::getVehicle($data->vehicle_id)->vehiclename->name
@@ -998,7 +1111,7 @@ class ReportsController extends Controller
                ));
               }
 
-              if (Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel') {
+              if (Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire') {
 
               $sheet->row(8, array(
                'Seat No : ',$data->seatno
@@ -1051,6 +1164,36 @@ class ReportsController extends Controller
               });
                       
              $sheet->cell('B9', function($cell) {
+
+               // manipulate the cell
+                $cell->setFontWeight('bold');
+
+              });
+              }else if(Auth::user()->type == 'Car Hire'){
+              $sheet->row(8, array(
+               'Start Date : ',$data->start_date
+               ));
+
+                $sheet->row(9, array(
+               'End Date : ',$data->end_date
+               ));
+              
+              $sheet->row(10, array(
+               'Date Booked : ',$data->date
+               ));
+
+              $sheet->row(11, array(
+               'Amount ('.$currency.') : ',$data->amount
+               ));
+
+              $sheet->cell('A11', function($cell) {
+
+               // manipulate the cell
+                $cell->setFontWeight('bold');
+
+              });
+                      
+             $sheet->cell('B11', function($cell) {
 
                // manipulate the cell
                 $cell->setFontWeight('bold');
@@ -1158,10 +1301,16 @@ class ReportsController extends Controller
                 $cell->setFontWeight('bold');
 
               });
-
+              
+              if(Auth::user()->type != 'Car Hire'){
               $sheet->row(7, array(
               '#','Ticket No.','Firstname','Lastname','Email','ID / Passport No.','Contact'
               ));
+              }else{
+              $sheet->row(7, array(
+              '#','Receipt No.','Firstname','Lastname','Email','ID / Passport No.','Contact'
+              ));
+              }
 
               $sheet->row(7, function ($r) {
 
@@ -1230,9 +1379,15 @@ class ReportsController extends Controller
 
               });
 
+              if(Auth::user()->type != 'Car Hire'){
               $sheet->row(5, array(
                'Ticket No: ',$data->ticketno
                ));
+              }else{
+               $sheet->row(5, array(
+               'Receipt No: ',$data->ticketno
+               )); 
+              }
 
               $sheet->row(6, array(
                'Firstname: ',$data->firstname
@@ -1317,10 +1472,17 @@ class ReportsController extends Controller
 
               });
 
+              if(Auth::user()->type == 'Hotel'){
               $sheet->mergeCells('A5:F5');
               $sheet->row(5, array(
               'Payments Report'
               ));
+              }else{
+              $sheet->mergeCells('A5:G5');
+              $sheet->row(5, array(
+              'Payments Report'
+              )); 
+              }
 
               $sheet->row(5, function($cell) {
 
@@ -1354,6 +1516,10 @@ class ReportsController extends Controller
               $sheet->row(7, array(
               '#', 'Ticket No.','Customer','Date Booked','Payment Option','Amount ('.$currency.')'
               ));
+              }else if(Auth::user()->type == 'Car Hire'){
+              $sheet->row(7, array(
+              '#', 'Receipt No.','Vehicle','Customer','Date Booked','Payment Option','Amount ('.$currency.')'
+              ));
               }else{
               $sheet->row(7, array(
               '#', 'Ticket No.',$name,'Customer','Date Booked','Payment Option','Amount ('.$currency.')'
@@ -1378,6 +1544,10 @@ class ReportsController extends Controller
              }else if (Auth::user()->type == 'Hotel') {
              $sheet->row($row, array(
              $i+1,$data[$i]->ticketno,$data[$i]->firstname.' '.$data[$i]->lastname,$data[$i]->date,$data[$i]->mode_of_payment,$data[$i]->amount
+             ));
+             }else if (Auth::user()->type == 'Car Hire'){
+              $sheet->row($row, array(
+             $i+1,$data[$i]->ticketno,Booking::getVehicle($data[$i]->vehicle_id)->regno.' '.Booking::getVehicle($data[$i]->vehicle_id)->type,$data[$i]->firstname.' '.$data[$i]->lastname,$data[$i]->date,$data[$i]->mode_of_payment,$data[$i]->amount
              ));
              }else{
               $sheet->row($row, array(
@@ -1476,15 +1646,25 @@ class ReportsController extends Controller
               $name = 'Event';
               }
 
+              if(Auth::user()->type == 'Car Hire'){
+              $sheet->row(5, array(
+               'Receipt No : ',$data->ticketno
+               ));
+              }else{
               $sheet->row(5, array(
                'Ticket No : ',$data->ticketno
                ));
+              }
 
               if (Auth::user()->type == 'Events') {
               $sheet->row(6, array(
                $name.' : ',Booking::getEvent($data->event_id)->name
                ));
               }else if (Auth::user()->type == 'Hotel') {
+              }else if (Auth::user()->type == 'Car Hire') {
+              $sheet->row(6, array(
+               $name.' : ',Booking::getVehicle($data->vehicle_id)->regno.' '.Booking::getVehicle($data->vehicle_id)->type
+              ));
               }else{
               $sheet->row(6, array(
                $name.' : ',Booking::getVehicle($data->vehicle_id)->regno.' '.Booking::getVehicle($data->vehicle_id)->vehiclename->name

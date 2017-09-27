@@ -82,24 +82,54 @@ body {
    </div>
 
 <br>
-
+<?php $currency = ''; ?>
+@if($organization->currency_shortname == null || $organization->currency_shortname == '')
+<?php $currency = 'KES'; ?>
+@else
+<?php $currency = $organization->currency_shortname; ?>
+@endif
  
 	<div class="content" style='margin-top:50px;'>
  
-   <div align="center"><h3><strong>Booking report for {{$booking->id_number.' : '.$booking->firstname.' '.$booking->lastname}}</strong></h3></div>
+   <div align="center"><h3><strong>Cars report</strong></h3></div>
     <table class="table table-bordered" border='1' cellspacing='0' cellpadding='0'>
 
-      @if(Auth::user()->type == 'Car Hire')
-      <tr><td><strong>Receipt No.</strong></td><td>{{$booking->ticketno}}</td></tr>
-        @else
-        <tr><td><strong>Ticket No.</strong></td><td>{{$booking->ticketno}}</td></tr>
-        @endif
-      <tr><td><strong>Firstname</strong></td><td>{{$booking->firstname}}</td></tr>
-      <tr><td><strong>Lastname</strong></td><td>{{$booking->lastname}}</td></tr>
-      <tr><td><strong>Email</strong></td><td>{{$booking->email}}</td></tr>
-      <tr><td><strong>ID / Passport No.</strong></td><td>{{$booking->id_number}}</td></tr>
-      <tr><td><strong>Contact</strong></td><td>{{$booking->phone}}</td></tr>
-      
+      <tr>
+     
+
+        <td><strong>#</strong></td>
+        <td><strong>Logo </strong></td>
+        <td><strong>Registration No.</strong></td>
+        <td><strong>Car Type</strong></td>
+        <td><strong>Capacity</strong></td>
+        <td><strong>Location</strong></td>
+        <td><strong>Price ({{$currency}})</strong></td>
+      </tr>
+      <?php $i =1; 
+            $pricetotal = 0;
+      ?>
+      @foreach($carhires as $carhire)
+      <tr>
+          <td valign="top">{{$i}}</td>
+            @if($organization->logo == null || $organization->logo == '')
+            <td></td>
+            @else
+            <td><img src="{{public_path().'/uploads/logo/'.$carhire->image}}" width="100" height="100" alt="no logo" /></td>
+            @endif
+          <td valign="top">{{$carhire->regno}}</td>
+          <td valign="top">{{$carhire->type}}</td>
+          <td valign="top">{{$carhire->capacity}}</td>
+          <td valign="top">{{$carhire->location}}</td>
+          <td valign="top" align="right">{{number_format($carhire->price,2)}}</td>
+      <?php
+       $pricetotal = $pricetotal + $carhire->price;
+       
+       $i++; ?>
+   
+    @endforeach
+    <tr>
+      <td colspan="6" align="right"><strong>Total</strong></td><td align="right"><strong>{{number_format($pricetotal,2)}}</strong></td>
+    </tr>
       
     </table>
 

@@ -281,8 +281,10 @@
         <tr class="{{'del'.$payment->id}}">
           <td>{{$i}}</td>
           <td>{{$payment->ticketno}}</td>
-           @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
+          @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
           <td>{{App\Booking::getVehicle($payment->vehicle_id)->regno.' '.App\Booking::getVehicle($payment->vehicle_id)->vehiclename->name}}</td>
+          @elseif(Auth::user()->type == 'Car Hire')
+          <td>{{App\Booking::getVehicle($payment->vehicle_id)->regno.' '.App\Booking::getVehicle($payment->vehicle_id)->type}}</td>
           @elseif(Auth::user()->type == 'Events')
           <td>{{App\Booking::getEvent($payment->event_id)->name}}</td>
           @endif
@@ -298,10 +300,12 @@
                   </button>
           
                   <ul class="dropdown-menu" role="menu">
-                    @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
+                    @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
                     <li><a class="view" data-toggle="modal" data-ticket="{{$payment->ticketno}}" data-vehicle="{{App\Booking::getVehicle($payment->vehicle_id)->regno.' '.App\Booking::getVehicle($payment->vehicle_id)->vehiclename->name}}" data-customer="{{$payment->firstname.' '.$payment->lastname}}" data-date="{{$payment->date}}" data-mode="{{$payment->mode_of_payment}}" data-amount="{{number_format($payment->amount,2)}}"  data-id="{{$payment->id}}" href="#modal-view">View</a></li>
                     @elseif(Auth::user()->type == 'Hotel')
                     <li><a class="view" data-toggle="modal" data-ticket="{{$payment->ticketno}}" data-customer="{{$payment->firstname.' '.$payment->lastname}}" data-date="{{$payment->date}}" data-mode="{{$payment->mode_of_payment}}" data-amount="{{number_format($payment->amount,2)}}"  data-id="{{$payment->id}}" href="#modal-view">View</a></li>
+                    @elseif(Auth::user()->type == 'Car Hire')
+                    <li><a class="view" data-toggle="modal" data-ticket="{{$payment->ticketno}}" data-vehicle="{{App\Booking::getVehicle($payment->vehicle_id)->regno.' '.App\Booking::getVehicle($payment->vehicle_id)->type}}" data-customer="{{$payment->firstname.' '.$payment->lastname}}" data-date="{{$payment->date}}" data-mode="{{$payment->mode_of_payment}}" data-amount="{{number_format($payment->amount,2)}}"  data-id="{{$payment->id}}" href="#modal-view">View</a></li>
                     @else
                     <li><a class="view" data-toggle="modal" data-ticket="{{$payment->ticketno}}" data-event="{{App\Booking::getEvent($payment->event_id)->name}}" data-customer="{{$payment->firstname.' '.$payment->lastname}}" data-date="{{$payment->date}}" data-mode="{{$payment->mode_of_payment}}" data-amount="{{number_format($payment->amount,2)}}"  data-id="{{$payment->id}}" href="#modal-view">View</a></li>
                     @endif

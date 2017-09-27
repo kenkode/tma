@@ -98,8 +98,12 @@ body {
      
 
         <td><strong>#</strong></td>
+        @if(Auth::user()->type == 'Car Hire')
+        <td><strong>Receipt No.</strong></td>
+        @else
         <td><strong>Ticket No.</strong></td>
-        @if(Auth::user()->type == 'Travel' || Auth::user()->type == 'Taxi')
+        @endif
+        @if(Auth::user()->type == 'Travel' || Auth::user()->type == 'Taxi' || Auth::user()->type == 'Car Hire')
         <td><strong>Vehicle</strong></td>
         @elseif(Auth::user()->type == 'SGR')
         <td><strong>Train</strong></td>
@@ -107,19 +111,22 @@ body {
         <td><strong>Airplane</strong></td>
         @elseif(Auth::user()->type == 'Events')
         <td><strong>Event</strong></td>
-        @elseif(Auth::user()->type == 'Events')
+        @elseif(Auth::user()->type == 'Hotel')
         @endif
         <td><strong>Customer</strong></td>
-        @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
+        @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
         <td><strong>Seat No.</strong></td>
         @endif
 
-        @if(Auth::user()->type != 'Events')
-        <td><strong>Travel Date</strong></td>
-        @elseif(Auth::user()->type == 'Events')
+        @if(Auth::user()->type == 'Events')
         <td><strong>Event Date</strong></td>
         @elseif(Auth::user()->type == 'Hotel')
         <td><strong>Check-In Date/Time</strong></td>
+        @elseif(Auth::user()->type == 'Car Hire')
+        <td><strong>Start Date</strong></td>
+        <td><strong>End Date</strong></td>
+        @else
+        <td><strong>Travel Date</strong></td>
         @endif
         <td><strong>Date Booked</strong></td>
         <td><strong>Amount ({{$currency}})</strong></td>
@@ -133,15 +140,22 @@ body {
           <td valign="top">{{$booking->ticketno}}</td>
           @if(Auth::user()->type == 'Travel' || Auth::user()->type == 'Taxi' || Auth::user()->type == 'SGR' || Auth::user()->type == 'Airline')
           <td valign="top">{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name}}</td>
+          @elseif(Auth::user()->type == 'Car Hire')
+          <td valign="top">{{App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->type}}</td>
           @elseif(Auth::user()->type == 'Events')
           <td valign="top">{{App\Booking::getEvent($booking->event_id)->name}}</td>
           @elseif(Auth::user()->type == 'Hotel')
           @endif
           <td valign="top">{{$booking->firstname.' '.$booking->lastname}}</td>
-          @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel')
+          @if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire')
           <td valign="top">{{$booking->seatno}}</td>
           @endif
+          @if(Auth::user()->type == 'Car Hire')
+          <td valign="top">{{$booking->start_date}}</td>
+          <td valign="top">{{$booking->end_date}}</td>
+          @else
           <td valign="top">{{$booking->travel_date}}</td>
+          @endif
           <td valign="top">{{$booking->date}}</td>
           <td valign="top" align="right">{{number_format($booking->amount,2)}}</td>
       <?php

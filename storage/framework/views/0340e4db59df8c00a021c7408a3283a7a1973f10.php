@@ -231,7 +231,7 @@
                                                <td><strong>Customer : </strong></td><td class="tdcustomer"></td>
                                             </tr>
 
-                                            <?php if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel'): ?>
+                                            <?php if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire'): ?>
                                             <tr>
                                                <td><strong>Seat No : </strong></td><td class="tdseat"></td>
                                             </tr>
@@ -333,9 +333,10 @@
         <tr class="<?php echo e('del'.$booking->id); ?>">
           <td><?php echo e($i); ?></td>
           <td><?php echo e($booking->ticketno); ?></td>
-          <?php if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel'): ?>
+          <?php if(Auth::user()->type != 'Events' && Auth::user()->type != 'Hotel' && Auth::user()->type != 'Car Hire'): ?>
           <td><?php echo e(App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name); ?></td>
-          
+          <?php elseif(Auth::user()->type == 'Car Hire'): ?>
+          <td><?php echo e(App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->type); ?></td>
           <?php elseif(Auth::user()->type == 'Events'): ?>
           <td><?php echo e(App\Booking::getEvent($booking->event_id)->name); ?></td>
           <?php endif; ?>
@@ -368,7 +369,7 @@
                     <li><a class="view" data-toggle="modal" data-ticket="<?php echo e($booking->ticketno); ?>" data-customer="<?php echo e($booking->firstname.' '.$booking->lastname); ?>" data-seat="<?php echo e($booking->seatno); ?>" data-travel="<?php echo e($booking->travel_date); ?>" data-date="<?php echo e($booking->date); ?>" data-status="<?php echo e($booking->status); ?>" data-amount="<?php echo e(number_format($booking->amount,2)); ?>"  data-id="<?php echo e($booking->id); ?>" href="#modal-view">View</a></li>
 
                     <?php elseif(Auth::user()->type == 'Car Hire'): ?>
-                    <li><a class="view" data-toggle="modal" data-ticket="<?php echo e($booking->ticketno); ?>" data-vehicle="<?php echo e(App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->vehiclename->name); ?>" data-customer="<?php echo e($booking->firstname.' '.$booking->lastname); ?>" data-startdate="<?php echo e($booking->start_date); ?>" data-enddate="<?php echo e($booking->end_date); ?>" data-date="<?php echo e($booking->date); ?>" data-status="<?php echo e($booking->status); ?>" data-amount="<?php echo e(number_format($booking->amount,2)); ?>"  data-id="<?php echo e($booking->id); ?>" href="#modal-view">View</a></li>
+                    <li><a class="view" data-toggle="modal" data-ticket="<?php echo e($booking->ticketno); ?>" data-vehicle="<?php echo e(App\Booking::getVehicle($booking->vehicle_id)->regno.' '.App\Booking::getVehicle($booking->vehicle_id)->type); ?>" data-customer="<?php echo e($booking->firstname.' '.$booking->lastname); ?>" data-startdate="<?php echo e($booking->start_date); ?>" data-enddate="<?php echo e($booking->end_date); ?>" data-date="<?php echo e($booking->date); ?>" data-status="<?php echo e($booking->status); ?>" data-amount="<?php echo e(number_format($booking->amount,2)); ?>"  data-id="<?php echo e($booking->id); ?>" href="#modal-view">View</a></li>
                     <?php endif; ?>
                     <li><a class="sreport" data-toggle="modal" data-id="<?php echo e($booking->id); ?>" href="#modal-singlereport">Report</a></li>
                     
