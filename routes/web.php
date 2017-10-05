@@ -11,7 +11,11 @@
 |
 */
 
+//Android Routes
+Route::get('get_cars', 'AndroidController@getCars');
+Route::get('get_locations', 'AndroidController@getLocations');
 
+Route::post('report/events', 'ReportsController@events');
 
 Route::get('/login/{success}', function ($success) {
 	$success = "Successfully registered organization! Please wait for confirmation from the admin";
