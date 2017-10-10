@@ -14,6 +14,8 @@
 //Android Routes
 Route::get('get_cars', 'AndroidController@getCars');
 Route::get('get_locations', 'AndroidController@getLocations');
+Route::get('hire_car', 'AndroidController@hireCar');
+
 
 Route::post('report/events', 'ReportsController@events');
 

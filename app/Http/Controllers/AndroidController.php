@@ -22,4 +22,11 @@ class AndroidController extends Controller
         
         return json_encode($carhires);
     }
+
+    public function hireCar()
+    {
+        $carhires = Carhire::select("location")->distinct()->get();
+        
+        return json_encode($carhires);
+    }
 }
