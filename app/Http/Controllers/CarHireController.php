@@ -119,7 +119,7 @@ class CarHireController extends Controller
     public function delete(Request $request)
     {
       //dd($request->id);
-        $count = Booking::where('carhire_id',$request->id)->count();
+        $count = Booking::where('vehicle_id',$request->id)->count();
         if($count > 0){
         return 1;
         }else{
