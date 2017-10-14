@@ -55,9 +55,15 @@ class AndroidController extends Controller
         $organization = Organization::find($request->organization);
         $booking = Booking::orderBy('id','DESC')->first();
 
-        $types = explode(',', str_replace(array('[',']','"'),'',$request->types));
-        $nums  = explode(',', str_replace(array('[',']'),'',$request->nums));
-        $amounts  = explode(',', str_replace(array('[',']'),'',$request->amounts));
+        $types = explode(', ', str_replace(array('[',']','"'),'',$request->types));
+        $nums  = explode(', ', str_replace(array('[',']'),'',$request->nums));
+        $amounts  = explode(', ', str_replace(array('[',']'),'',$request->amounts));
+
+        /*$carhire = Carhire::where('type',$types[1])->first();
+       
+
+        $data['success'] =  $carhire;
+        return $data;*/
 
         $sdate = strtotime($request->sdate.' '.$request->stime);
         $edate = strtotime($request->edate.' '.$request->etime);
@@ -126,8 +132,9 @@ class AndroidController extends Controller
         $booking->phone = $phone;
         $booking->id_number = $idno;
         $booking->ticketno = $ticketno;
-        $booking->organization_id = 7;
-        $booking->amount = $total;
+        $booking->organization_id = $organization->id;
+        $booking->amount = $diffDays * $amounts[$i] * $nums[$i];
+        $booking->days = $diffDays;
         $booking->mode_of_payment = $mode;
         $booking->type = 'Car Hire';
         $booking->status = 'approved';
