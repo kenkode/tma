@@ -10,11 +10,25 @@ use App\Mail\Book;
 
 use App\Carhire;
 
+use App\Vehicle;
+
+use App\Schedule;
+
+use App\Vehiclename;
+
+use App\Payment;
+
 use App\Booking;
 
 use App\Organization;
 
+use App\Event;
+
+use App\Route;
+
 use DateTime;
+
+use DB;
 
 class AndroidController extends Controller
 {
@@ -26,11 +40,182 @@ class AndroidController extends Controller
         return json_encode($carhires);
     }
 
+    public function getVehicles(Request $request)
+    {
+        $flag = array();
+        $vehicles = Schedule::join("vehicles","schedules.vehicle_id","=","vehicles.id")
+                            ->join("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
+                            ->join(DB::raw('(select routes.name as oname,routes.id as oid from schedules left join routes on schedules.origin_id=routes.id) as origin'), function($join){
+                                $join->on('schedules.origin_id', '=', 'origin.oid');
+                            })
+                            ->join(DB::raw('(select routes.name as dname,routes.id as did from schedules left join routes on schedules.destination_id=routes.id) as des'), function($join){
+                                 $join->on('schedules.destination_id', '=', 'des.did');
+                            })
+                            ->where('origin.oname',$request->origin)
+                            ->where('des.dname',$request->destination)
+                            ->where('vehiclenames.type','Travel')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure')
+                            ->get();
+
+        if(count($vehicles)){
+        foreach ($vehicles as $vehicle) {
+            $flag = $vehicle;
+            $payments = Payment::join('vehicles','payments.vehicle_id','=','vehicles.id')
+                                   ->where('origin_id',$vehicle->oid)
+                                   ->where('destination_id',$vehicle->did)
+                                   ->select('firstclass as vipprice', 'economic as economicfare')
+                                   ->get();
+           
+        foreach ($payments as $payment) {
+            $flag['10'] = $payment->vipprice;
+            $flag['vipprice'] = $payment->vipprice;
+            $flag['11'] = $payment->economicfare;
+            $flag['economicfare'] = $payment->economicfare;
+        }
+    }
+    $flag = array($flag);
+    //array_push($flag, $payflag);
+        print(json_encode($flag));
+    }
+        
+        //return json_encode($vehicles);
+    }
+
+    public function getTrains(Request $request)
+    {
+        $flag = array();
+        $vehicles = Schedule::join("vehicles","schedules.vehicle_id","=","vehicles.id")
+                            ->join("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
+                            ->join(DB::raw('(select routes.name as oname,routes.id as oid from schedules left join routes on schedules.origin_id=routes.id) as origin'), function($join){
+                                $join->on('schedules.origin_id', '=', 'origin.oid');
+                            })
+                            ->join(DB::raw('(select routes.name as dname,routes.id as did from schedules left join routes on schedules.destination_id=routes.id) as des'), function($join){
+                                 $join->on('schedules.destination_id', '=', 'des.did');
+                            })
+                            ->where('origin.oname',$request->origin)
+                            ->where('des.dname',$request->destination)
+                            ->where('vehiclenames.type','SGR')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure')
+                            ->get();
+
+        if(count($vehicles)){
+        foreach ($vehicles as $vehicle) {
+            $flag = $vehicle;
+            $payments = Payment::join('vehicles','payments.vehicle_id','=','vehicles.id')
+                                   ->where('origin_id',$vehicle->oid)
+                                   ->where('destination_id',$vehicle->did)
+                                   ->select('firstclass as vipprice', 'economic as economicfare')
+                                   ->get();
+           
+        foreach ($payments as $payment) {
+            $flag['10'] = $payment->vipprice;
+            $flag['vipprice'] = $payment->vipprice;
+            $flag['11'] = $payment->economicfare;
+            $flag['economicfare'] = $payment->economicfare;
+        }
+    }
+    $flag = array($flag);
+    //array_push($flag, $payflag);
+        print(json_encode($flag));
+    }
+        
+        //return json_encode($vehicles);
+    }
+
+
+    public function getAirplanes(Request $request)
+    {
+        $flag = array();
+        $vehicles = Schedule::join("vehicles","schedules.vehicle_id","=","vehicles.id")
+                            ->join("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
+                            ->join(DB::raw('(select routes.name as oname,routes.id as oid from schedules left join routes on schedules.origin_id=routes.id) as origin'), function($join){
+                                $join->on('schedules.origin_id', '=', 'origin.oid');
+                            })
+                            ->join(DB::raw('(select routes.name as dname,routes.id as did from schedules left join routes on schedules.destination_id=routes.id) as des'), function($join){
+                                 $join->on('schedules.destination_id', '=', 'des.did');
+                            })
+                            ->where('origin.oname',$request->origin)
+                            ->where('des.dname',$request->destination)
+                            ->where('vehiclenames.type','Airline')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure')
+                            ->get();
+
+        if(count($vehicles)){
+        foreach ($vehicles as $vehicle) {
+            $flag = $vehicle;
+            $payments = Payment::join('vehicles','payments.vehicle_id','=','vehicles.id')
+                                   ->where('origin_id',$vehicle->oid)
+                                   ->where('destination_id',$vehicle->did)
+                                   ->select('firstclass as vipprice', 'economic as economicfare', 'children as childrenfare', 'business as businessfare')
+                                   ->get();
+           
+        foreach ($payments as $payment) {
+            $flag['10'] = $payment->vipprice;
+            $flag['vipprice'] = $payment->vipprice;
+            $flag['11'] = $payment->economicfare;
+            $flag['economicfare'] = $payment->economicfare;
+            $flag['12'] = $payment->childrenfare;
+            $flag['childrenfare'] = $payment->childrenfare;
+            $flag['13'] = $payment->businessfare;
+            $flag['businessfare'] = $payment->businessfare;
+        }
+    }
+    $flag = array($flag);
+    //array_push($flag, $payflag);
+        print(json_encode($flag));
+    }
+        
+        //return json_encode($vehicles);
+    }
+
+    public function getEvents()
+    {
+        date_default_timezone_set("Africa/Nairobi");
+        //echo date('Y-m-d H:i:s');
+        $events = Event::where('date','>=',date('Y-m-d H:i:s'))
+                            ->select('events.name', 'events.image as imageUrl', 'description', 'slots', 'address', 'organization_id as organizationId', 'contact', 'vip as vipprice', 'normal as economic', 'children','id as eventid','date')
+                            ->get();
+        
+        return json_encode($events);
+    }
+
+    public function getTaxis()
+    {
+        $vehicles = Vehicle::join("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
+                            ->where('vehiclenames.type','Taxi')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.capacity', 'vehicles.id as vehicleid', 'vehicles.organization_id as organization')
+                            ->get();
+        
+        if(count($vehicles)){
+        foreach ($vehicles as $vehicle) {
+            $flag = $vehicle;
+            $payments = Payment::join('vehicles','payments.vehicle_id','=','vehicles.id')
+                                   ->select('economic as economicfare')
+                                   ->get();
+           
+        foreach ($payments as $payment) {
+            $flag['5'] = $payment->economicfare;
+            $flag['economicfare'] = $payment->economicfare;
+        }
+    }
+    $flag = array($flag);
+    //array_push($flag, $payflag);
+        print(json_encode($flag));
+    }
+    }
+
     public function getLocations()
     {
     	$carhires = Carhire::select("location")->distinct()->get();
         
         return json_encode($carhires);
+    }
+
+    public function getRoutes(Request $request)
+    {
+        $routes = Route::select("name")->where('type',$request->type)->distinct()->get();
+        
+        return json_encode($routes);
     }
 
     public function initials($str,$id) {

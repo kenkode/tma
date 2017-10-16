@@ -13,7 +13,13 @@
 
 //Android Routes
 Route::get('get_cars', 'AndroidController@getCars');
+Route::get('get_vehicles', 'AndroidController@getVehicles');
+Route::get('get_airplanes', 'AndroidController@getAirplanes');
+Route::get('get_trains', 'AndroidController@getTrains');
+Route::get('get_taxis', 'AndroidController@getTaxis');
+Route::get('get_events', 'AndroidController@getEvents');
 Route::get('get_locations', 'AndroidController@getLocations');
+Route::get('get_routes', 'AndroidController@getRoutes');
 Route::get('hire_car', 'AndroidController@hireCar');
 
 
