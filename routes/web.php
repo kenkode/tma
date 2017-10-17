@@ -20,6 +20,9 @@ Route::get('get_taxis', 'AndroidController@getTaxis');
 Route::get('get_events', 'AndroidController@getEvents');
 Route::get('get_locations', 'AndroidController@getLocations');
 Route::get('get_routes', 'AndroidController@getRoutes');
+Route::get('get_branches', 'AndroidController@getBranches');
+Route::get('get_hotels', 'AndroidController@getHotels');
+Route::get('get_rooms', 'AndroidController@getRooms');
 Route::get('hire_car', 'AndroidController@hireCar');
 
 
