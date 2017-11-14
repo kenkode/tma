@@ -133,6 +133,8 @@ class PaymentsController extends Controller
     {
         $payment = Payment::find($request->id);
         $payment->vehicle_id = $request->vid;
+        $payment->origin_id = $request->origin;
+        $payment->destination_id = $request->destination;
         if(Auth::user()->type != 'Taxi'){
         $payment->firstclass = str_replace(',', '', $request->vip);
         }

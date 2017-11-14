@@ -46,7 +46,6 @@ class AndroidController extends Controller
 
     public function getVehicles(Request $request)
     {
-        $flag = array();
         $vehicles = Schedule::leftJoin("vehicles","schedules.vehicle_id","=","vehicles.id")
                             ->leftJoin("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
                             ->leftJoin(DB::raw('(select routes.name as oname,routes.id as oid from schedules left join routes on schedules.origin_id=routes.id) as origin'), function($join){
@@ -55,39 +54,19 @@ class AndroidController extends Controller
                             ->leftJoin(DB::raw('(select routes.name as dname,routes.id as did from schedules left join routes on schedules.destination_id=routes.id) as des'), function($join){
                                  $join->on('schedules.destination_id', '=', 'des.did');
                             })
+                            ->leftJoin('payments','vehicles.id','=','payments.vehicle_id')
                             ->where('origin.oname',$request->origin)
                             ->where('des.dname',$request->destination)
                             ->where('vehiclenames.type','Travel')
-                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure')
+                            ->distinct('vehiclenames.name')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure','firstclass as vipprice', 'economic as economicfare')
                             ->get();
 
-        if(count($vehicles)){
-        foreach ($vehicles as $vehicle) {
-            $flag = $vehicle;
-            $payments = Payment::leftJoin('vehicles','payments.vehicle_id','=','vehicles.id')
-                                   ->where('origin_id',$vehicle->oid)
-                                   ->where('destination_id',$vehicle->did)
-                                   ->select('firstclass as vipprice', 'economic as economicfare')
-                                   ->get();
-           
-        foreach ($payments as $payment) {
-            $flag['10'] = $payment->vipprice;
-            $flag['vipprice'] = $payment->vipprice;
-            $flag['11'] = $payment->economicfare;
-            $flag['economicfare'] = $payment->economicfare;
-        }
-    }
-    $flag = array($flag);
-    //array_push($flag, $payflag);
-        print(json_encode($flag));
-    }
-        
-        //return json_encode($vehicles);
+        print(json_encode($vehicles));
     }
 
     public function getTrains(Request $request)
     {
-        $flag = array();
         $vehicles = Schedule::leftJoin("vehicles","schedules.vehicle_id","=","vehicles.id")
                             ->leftJoin("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
                             ->leftJoin(DB::raw('(select routes.name as oname,routes.id as oid from schedules left join routes on schedules.origin_id=routes.id) as origin'), function($join){
@@ -96,40 +75,22 @@ class AndroidController extends Controller
                             ->leftJoin(DB::raw('(select routes.name as dname,routes.id as did from schedules left join routes on schedules.destination_id=routes.id) as des'), function($join){
                                  $join->on('schedules.destination_id', '=', 'des.did');
                             })
+                            ->leftJoin('payments','vehicles.id','=','payments.vehicle_id')
                             ->where('origin.oname',$request->origin)
                             ->where('des.dname',$request->destination)
                             ->where('vehiclenames.type','SGR')
-                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure')
+                            ->distinct('vehiclenames.name')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure','firstclass as vipprice', 'economic as economicfare')
                             ->get();
 
-        if(count($vehicles)){
-        foreach ($vehicles as $vehicle) {
-            $flag = $vehicle;
-            $payments = Payment::leftJoin('vehicles','payments.vehicle_id','=','vehicles.id')
-                                   ->where('origin_id',$vehicle->oid)
-                                   ->where('destination_id',$vehicle->did)
-                                   ->select('firstclass as vipprice', 'economic as economicfare')
-                                   ->get();
-           
-        foreach ($payments as $payment) {
-            $flag['10'] = $payment->vipprice;
-            $flag['vipprice'] = $payment->vipprice;
-            $flag['11'] = $payment->economicfare;
-            $flag['economicfare'] = $payment->economicfare;
-        }
-    }
-    $flag = array($flag);
-    //array_push($flag, $payflag);
-        print(json_encode($flag));
-    }
-        
-        //return json_encode($vehicles);
+            
+        print(json_encode($vehicles));
+    
     }
 
 
     public function getAirplanes(Request $request)
     {
-        $flag = array();
         $vehicles = Schedule::leftJoin("vehicles","schedules.vehicle_id","=","vehicles.id")
                             ->leftJoin("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
                             ->leftJoin(DB::raw('(select routes.name as oname,routes.id as oid from schedules left join routes on schedules.origin_id=routes.id) as origin'), function($join){
@@ -138,38 +99,16 @@ class AndroidController extends Controller
                             ->leftJoin(DB::raw('(select routes.name as dname,routes.id as did from schedules left join routes on schedules.destination_id=routes.id) as des'), function($join){
                                  $join->on('schedules.destination_id', '=', 'des.did');
                             })
+                            ->leftJoin('payments','vehicles.id','=','payments.vehicle_id')
                             ->where('origin.oname',$request->origin)
                             ->where('des.dname',$request->destination)
                             ->where('vehiclenames.type','Airline')
-                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure')
+                            ->distinct('vehiclenames.name')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure','firstclass as vipprice', 'economic as economicfare', 'children as childrenfare', 'business as businessfare')
                             ->get();
 
-        if(count($vehicles)){
-        foreach ($vehicles as $vehicle) {
-            $flag = $vehicle;
-            $payments = Payment::leftJoin('vehicles','payments.vehicle_id','=','vehicles.id')
-                                   ->where('origin_id',$vehicle->oid)
-                                   ->where('destination_id',$vehicle->did)
-                                   ->select('firstclass as vipprice', 'economic as economicfare', 'children as childrenfare', 'business as businessfare')
-                                   ->get();
-           
-        foreach ($payments as $payment) {
-            $flag['10'] = $payment->vipprice;
-            $flag['vipprice'] = $payment->vipprice;
-            $flag['11'] = $payment->economicfare;
-            $flag['economicfare'] = $payment->economicfare;
-            $flag['12'] = $payment->childrenfare;
-            $flag['childrenfare'] = $payment->childrenfare;
-            $flag['13'] = $payment->businessfare;
-            $flag['businessfare'] = $payment->businessfare;
-        }
-    }
-    $flag = array($flag);
-    //array_push($flag, $payflag);
-        print(json_encode($flag));
-    }
         
-        //return json_encode($vehicles);
+        print(json_encode($vehicles));
     }
 
     public function getEvents()
@@ -212,26 +151,13 @@ class AndroidController extends Controller
     public function getTaxis()
     {
         $vehicles = Vehicle::leftJoin("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
+                            ->leftJoin('payments','vehicles.id','=','payments.vehicle_id')
                             ->where('vehiclenames.type','Taxi')
-                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.capacity', 'vehicles.id as vehicleid', 'vehicles.organization_id as organization')
+                            ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.capacity', 'vehicles.id as vehicleid', 'vehicles.organization_id as organization','economic as economicfare')
                             ->get();
         
-        if(count($vehicles)){
-        foreach ($vehicles as $vehicle) {
-            $flag = $vehicle;
-            $payments = Payment::leftJoin('vehicles','payments.vehicle_id','=','vehicles.id')
-                                   ->select('economic as economicfare')
-                                   ->get();
-           
-        foreach ($payments as $payment) {
-            $flag['5'] = $payment->economicfare;
-            $flag['economicfare'] = $payment->economicfare;
-        }
-    }
-    $flag = array($flag);
-    //array_push($flag, $payflag);
-        print(json_encode($flag));
-    }
+        
+        print(json_encode($vehicles));
     }
 
     public function getLocations()

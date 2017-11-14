@@ -1,35 +1,26 @@
 <style type="text/css">
 
-   .checkboxes label {
-    display: block !important;
-    float: left !important;
-    padding-right: 10px !important;
-    width: 60px !important;
-    margin-bottom: 5px !important;
-    white-space: nowrap !important;
+    #imagePreview {
+    width: 180px;
+    height: 180px;
+    background-position: center center;
+    background-size: cover;
+    background-image:url("<?php echo e(url('/public/uploads/logo/default_photo.png')); ?>");
+    -webkit-box-shadow: 0 0 1px 1px rgba(0, 0, 0, .3);
+    display: inline-block;
     }
-
-   .checkboxes input {
-    vertical-align: middle !important;
-    width:20px !important;
-    }
-
-   .checkboxes label span {
-    vertical-align: middle !important;
-    margin-bottom: -50px !important;
-    }
-
+          
     .modal { overflow: auto !important; }
    </style>
 
 <?php $__env->startSection('content'); ?>
 <div class="row  border-bottom white-bg dashboard-header">
 <div class="pro-head">
-            <h2>Schedules</h2>
+            <h2>Vehicle Names</h2>
         </div>
 
       <div style="margin-bottom:20px;margin-left:10px;">
-      <a data-toggle="modal" id="add" class="btn btn-primary" href="#modal-form">Add Schedule</a>&emsp;<a href="#modal-report" data-toggle="modal" id="report" class="btn btn-warning">Schedule Report</a>
+      <a data-toggle="modal" id="add" class="btn btn-primary" href="#modal-form">Add Vehicle Name</a>&emsp;<a data-toggle="modal" id="report" class="btn btn-warning" href="#modal-report">Vehicle Names Report</a>
       </div>
 
       
@@ -47,82 +38,34 @@
                                          </div>
                                          </div>
                                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                                        <h3 id="title" class="m-t-none m-b">Create Schedule</h3>
-                                             <input type="hidden" id="id" placeholder="Enter name" class="form-control">
-                                             
-                                             <div class="form-group"><label>Name <span style="color:red">*</span></label> 
-                                             <select id="vid" class="form-control">
-                                             <option value="">Select Vehicle</option>
-                                             <?php $__currentLoopData = $vehicles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vehicle): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
-                                             <option value="<?php echo e($vehicle->id); ?>"> <?php echo e($vehicle->regno.'-'.$vehicle->vehiclename->name); ?></option>
-                                             <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
-                                             </select>
-                                             <p id="selname" style="color:red"></p>
+                                        <h3 id="title" class="m-t-none m-b">Create Vehicle Name</h3>
+                                             <input type="hidden" id="vid" placeholder="Enter name" class="form-control" required data-error="Please insert vehicle name">
+                                             <div class="form-group">
+                                             <label>Vehicle Image :</label>
+                                             <input id="image" type="file" name="logo">
+                                             <br>
+                                             <div id="imagePreview"></div>
                                              </div>
-                                             
-                                             <div class="form-group"><label>Origin <span style="color:red">*</span></label> 
-                                             <select id="oid" class="form-control">
-                                             <option value="">Select Origin</option>
-                                             <?php $__currentLoopData = $destinations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $destination): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
-                                             <option value="<?php echo e($destination->id); ?>"> <?php echo e($destination->name); ?></option>
-                                             <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
-                                             </select>
-                                             <p id="origin" style="color:red"></p>
+                                             <div class="form-group"><label>Name</label> 
+                                             <input type="text" id="name" placeholder="Enter name" class="form-control" required data-error="Please insert vehicle name">
+                                             <p id="errors" style="color:red"></p>
                                              </div>
-
-                                             <div class="form-group"><label>Destination <span style="color:red">*</span></label> 
-                                            <select id="did" class="form-control">
-                                             <option value="">Select Destination</option>
-                                             <?php $__currentLoopData = $destinations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $destination): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
-                                             <option value="<?php echo e($destination->id); ?>"> <?php echo e($destination->name); ?></option>
-                                             <?php endforeach; $__env->popLoop(); $loop = $__env->getFirstLoop(); ?>
-                                             </select>
-                                             <p id="destination" style="color:red"></p>
-                                             </div>
-
-                                             <!-- <div class="form-group"><label>Arrival Time <span style="color:red">*</span></label> 
-                                             <div class="right-inner-addon">
-                                             <i class="glyphicon glyphicon-calendar"></i>
-                                             <input type="text" class="form-control" name='arrival' id='datetimepicker' placeholder="Arrival Date">
-                    
-                                             </div>
-                                             <p id="arrerror" style="color:red"></p>
-                                             </div>
-
-                                             <div class="form-group"><label>Departure Time <span style="color:red">*</span></label> 
-
-                                             <div class="right-inner-addon">
-                                             <i class="glyphicon glyphicon-calendar"></i>
-                                             <input type="text" class="form-control" name='departure' id='dp' placeholder="Departure Date">
-                                             </div>
-                                             <p id="deperror" style="color:red"></p>
-                                             </div> -->
-                                             
-                                            <div class="form-group">
-                                            <label>Applicable Payments<span style="color:red">*</span> 
-                                            <input class="vip" value="1" name="vip" type="checkbox">VIP Fare 
-                                            <input class="economic" name="economic" type="checkbox">Economic Fare 
-                                            </label>
-                                            <p id="paymenterror" style="color:red"></p>
-                                      </div>
-           
-           
-                                   </div>
-                                        <div class="modal-footer" style="margin-top: 10px !important">
+                                        </div>
+                                        <div class="modal-footer">
                                             <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
 
                                             <button type="button" id="submit" class="btn btn-primary sub-form">Save changes</button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>   
-
+                            </div>                
                         </form>   
-
-        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
+         
+         
+            <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content animated fadeIn">
-                                        <form target="_blank" action="<?php echo e(url('report/schedules')); ?>" method="post">     
+                                        <form target="_blank" action="<?php echo e(url('report/vehiclenames')); ?>" method="post">     
                                         <div class="modal-body">
                                         
                                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -147,40 +90,24 @@
                                         </form>
                                     </div>
                                 </div>
-                            </div>
+                            </div>   
 
-                  <div class="modal fade" id="modal-view" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal fade" id="modal-view" tabindex="-1" role="dialog" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content animated fadeIn">
                                             
                                         <div class="modal-body">
                                         
                                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                                        <h3 id="title" class="m-t-none m-b">Schedule</h3>
+                                        <h3 id="title" class="m-t-none m-b">Vehicle name</h3>
                                         <table class="table table-bordered table-hover">
 
                                             <tr>
-                                               <td><strong>Vehicle : </strong></td><td class="tdvehicle"></td>
+                                               <td><strong>Logo : </strong></td><td class="tdlogo"></td>
                                             </tr>
 
                                             <tr>
-                                               <td><strong>Origin : </strong></td><td class="tdorigin"></td>
-                                            </tr>
-
-                                            <tr>
-                                               <td><strong>Destination : </strong></td><td class="tddestination"></td>
-                                            </tr>
-
-                                            <!-- <tr>
-                                               <td><strong>Arrival : </strong></td><td class="tdarrival"></td>
-                                            </tr>
-
-                                            <tr>
-                                               <td><strong>Departure : </strong></td><td class="tddeparture"></td>
-                                            </tr> -->
-
-                                            <tr>
-                                               <td><strong>Applicable Fares : </strong></td><td class="tdfare"></td>
+                                               <td><strong>Name : </strong></td><td class="tdname"></td>
                                             </tr>
 
                                         </table>
@@ -192,34 +119,30 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
+                            </div>             
+                        
         <div class="check-error alert alert-danger"></div>
+
         <div class="table-responsive" style="border: none; min-height: 1000px !important">
+           
         <table id="users" class="table table-condensed table-responsive table-hover">
 
 
       <thead style="background:#263949">
 
         <th style="color:#FFF">#</th>
-        <th style="color:#FFF">Vehicle</th>
-        <th style="color:#FFF">Origin</th>
-        <th style="color:#FFF">Destination</th>
-        <!-- <th style="color:#FFF">Arrival</th>
-        <th style="color:#FFF">Departure</th> -->
+        <th style="color:#FFF">Logo</th>
+        <th style="color:#FFF">Name</th>
         <th style="color:#FFF">Action</th>
 
       </thead>
       <tbody class="displayrecord">
       <?php $i=1;?>
-      <?php $__currentLoopData = $schedules; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schedule): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
-        <tr class="<?php echo e('del'.$schedule->id); ?>">
+      <?php $__currentLoopData = $vehiclenames; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vehiclename): $__env->incrementLoopIndices(); $loop = $__env->getFirstLoop(); ?>
+        <tr class="<?php echo e('del'.$vehiclename->id); ?>">
           <td><?php echo e($i); ?></td>
-          <td><?php echo e(App\Schedule::getVehicle($schedule->vehicle_id)->regno.' '.App\Schedule::getVehicle($schedule->vehicle_id)->vehiclename->name); ?></td>
-          <td><?php echo e(App\Schedule::getDestination($schedule->origin_id)->name); ?></td>
-          <td><?php echo e(App\Schedule::getDestination($schedule->destination_id)->name); ?></td>
-          <!-- <td><?php echo e($schedule->arrival); ?></td>
-          <td><?php echo e($schedule->departure); ?></td> -->
+          <td><img src="<?php echo e(url('/public/uploads/logo/'.$vehiclename->logo)); ?>" width="100" height="100" alt="no logo" /></td>
+          <td><?php echo e($vehiclename->name); ?></td>
           <td>
 
                   <div class="btn-group">
@@ -228,11 +151,11 @@
                   </button>
           
                   <ul class="dropdown-menu" role="menu">
-                    <li><a class="view" data-toggle="modal" data-name="<?php echo e(App\Schedule::getVehicle($schedule->vehicle_id)->regno.' '.App\Schedule::getVehicle($schedule->vehicle_id)->vehiclename->name); ?>" data-origin="<?php echo e(App\Schedule::getDestination($schedule->origin_id)->name); ?>" data-id="<?php echo e($schedule->id); ?>" data-destination="<?php echo e(App\Schedule::getDestination($schedule->destination_id)->name); ?>" data-arrival="<?php echo e($schedule->arrival); ?>" data-departure="<?php echo e($schedule->departure); ?>" data-vip="<?php echo e($schedule->firstclass_apply); ?>" data-economic="<?php echo e($schedule->economic_apply); ?>" href="#modal-view">View</a></li>
+                    <li><a class="view" data-toggle="modal" data-name="<?php echo e($vehiclename->name); ?>" data-logo="<?php echo e($vehiclename->logo); ?>" data-id="<?php echo e($vehiclename->id); ?>" href="#modal-view">View</a></li>
 
-                    <li><a class="edit" data-toggle="modal" data-name="<?php echo e($schedule->vehicle_id); ?>" data-origin="<?php echo e($schedule ->origin_id); ?>" data-id="<?php echo e($schedule->id); ?>" data-destination="<?php echo e($schedule->destination_id); ?>" data-arrival="<?php echo e($schedule->arrival); ?>" data-departure="<?php echo e($schedule->departure); ?>" data-vip="<?php echo e($schedule->firstclass_apply); ?>" data-economic="<?php echo e($schedule->economic_apply); ?>" href="#modal-form">Update</a></li>
-                    
-                    <li><a id="<?php echo e($schedule->id); ?>" class="delete">
+                    <li><a class="edit" data-toggle="modal" data-name="<?php echo e($vehiclename->name); ?>" data-logo="<?php echo e($vehiclename->logo); ?>" data-id="<?php echo e($vehiclename->id); ?>" href="#modal-form">Update</a></li>
+                   
+                    <li><a id="<?php echo e($vehiclename->id); ?>" class="delete">
                     <form id="delform">
                     <?php echo e(csrf_field()); ?>
 
@@ -256,7 +179,24 @@
 
 <?php echo $__env->make('includes.footer', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 
-
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#image").on("change", function()
+    {
+        var files = !!this.files ? this.files : [];
+        if (!files.length || !window.FileReader) return; // no file selected, or no FileReader support
+        
+        if (/^image/.test( files[0].type)){ // only image file
+            var reader = new FileReader(); // instance of the FileReader
+            reader.readAsDataURL(files[0]); // read the local file
+            
+            reader.onloadend = function(){ // set image data as background of div
+                $("#imagePreview").css("background-image", "url("+this.result+")");
+            }
+        }
+    });
+});
+</script>
 
 <script type="text/javascript">
 
@@ -267,7 +207,7 @@
     $('.check-error').hide();
     $('#submit').removeAttr('disabled');
      $('#update').removeAttr('disabled');
-     $('#title').html('Create Schedule');
+     $('#title').html('Create Vehicle Name');
      $('#submit').html('Save changes');
      $('#sucessmessage').html('Saving data');
      $("#update").attr("id", "submit");
@@ -275,7 +215,7 @@
 
      function displaydata(){
        $.ajax({
-                      url     : "<?php echo e(URL::to('schedules/showrecord')); ?>",
+                      url     : "<?php echo e(URL::to('vehiclenames/showrecord')); ?>",
                       type    : "GET",
                       async   : false,
                      
@@ -290,132 +230,53 @@
    $('#add').on("click", function() {
     $("#update").attr("id", "submit");
      $('#submit').removeAttr('disabled');
-     $('#title').html('Create Schedule');
+     $('#title').html('Create Vehicle Name');
      $('#submit').html('Save changes');
      $('#sucessmessage').html('Saving data');     
-     $('#vid').val('');
+     $('#name').val('');
      $('#id').val('');
-     $('#oid').val('');
-     $('#did').val('');
-     $('#datetimepicker').val('');
-     $('#dp').val('');
-     $('.vip').removeAttr('checked');
-     $('.economic').removeAttr('checked');
-     $('#selname').html("");
-     $('#origin').html("");
-     $('#destination').html("");
-     $('#arrerror').html("");
-     $('#deperror').html("");
-     $('#paymenterror').html("");
-     $("#form").attr("action", "schedules/store");
+     $('#errors').html("");
+     $("#form").attr("action", "vehiclenames/store");
    });
 
     $("#users").on("click",".edit", function(){
      var id = $(this).data('id');
-     var vid = $(this).data('name');
-     var origin = $(this).data('origin');
-     var destination = $(this).data('destination');
-     var arrival = $(this).data('arrival');
-     var departure = $(this).data('departure');
-     var vip = $(this).data('vip');
-     var economic = $(this).data('economic');
-
+     var name = $(this).data('name');
      var l = window.location;
      var base_url = l.protocol + "//" + l.host + "/" + l.pathname.split('/')[1];
+     var logo = base_url+'/public/uploads/logo/'+$(this).data('logo');
      $('#update').removeAttr('disabled');
-     $(".modal-body #vid").val(vid);
-     $(".modal-body #id").val( id );
-     $(".modal-body #oid").val( origin );
-     $(".modal-body #did").val( destination );
-     $(".modal-body #datetimepicker").val( arrival );
-     $(".modal-body #dp").val( departure );
-
-     if(vip == 1){
-       $(".modal-body .vip").prop('checked','checked');
-     }else{
-       $(".modal-body .vip").prop('checked',false);
-     }
-     if(economic == 1){
-       $(".modal-body .economic").prop('checked','checked');
-     }else{
-       $(".modal-body .economic").prop('checked',false);
-     }
-
-     $('#title').html('Update Schedule');
+     $(".modal-body #name").val( name );
+     $(".modal-body #vid").val( id );
+     $(".modal-body #imagePreview").css('background-image', 'url('+logo+')');
+     $('#title').html('Update Vehicle Name');
      $('#submit').html('Update changes');
      $('#sucessmessage').html('Updating data');
-    // $("#submit").attr("id", "update");
-     $('#selname').html("");
-     $('#origin').html("");
-     $('#destination').html("");
-     $('#arrerror').html("");
-     $('#deperror').html("");
-     $('#paymenterror').html("");
-     $('.sub-form').remove();
+     //$("#submit").attr("id", "update");
+     $('#errors').html("");
+      $('.sub-form').remove();
      var r= $('<button type="button" id="update" class="btn btn-primary sub-form">Update changes</button>');
         $("#modal-form .modal-footer").append(r);
-     $("#form").attr("action", "schedules/update");
-
+      $("#form").attr("action", "vehiclenames/update");
    });
 
     $("#users").on("click",".view", function(){
      var id = $(this).data('id');
-     var vid = $(this).data('name');
-     var origin = $(this).data('origin');
-     var destination = $(this).data('destination');
-     var arrival = $(this).data('arrival');
-     var departure = $(this).data('departure');
-     var vip = $(this).data('vip');
-     var economic = $(this).data('economic');
-     var fares = '';
-
-     if(vip == 1 && economic== 1){
-     fares = '<ul><li>VIP Fare</li><li>Economic Fare</li></ul>';
-     }else if(vip == 0 && economic== 1){
-     fares = '<ul><li>Economic Fare</li></ul>'
-     }
-
+     var name = $(this).data('name');
      var l = window.location;
      var base_url = l.protocol + "//" + l.host + "/" + l.pathname.split('/')[1];
+     var logo = base_url+'/public/uploads/logo/'+$(this).data('logo');
      $('#update').removeAttr('disabled');
-     $(".modal-body .tdvehicle").html(vid);
-     $(".modal-body .tdorigin").html( origin );
-     $(".modal-body .tddestination").html( destination );
-     $(".modal-body .tdarrival").html( arrival );
-     $(".modal-body .tddeparture").html( departure );
-     $(".modal-body .tdfare").html( fares );
-
-     if(vip == 1){
-       $(".modal-body .vip").prop('checked','checked');
-     }else{
-       $(".modal-body .vip").prop('checked',false);
-     }
-     if(economic == 1){
-       $(".modal-body .economic").prop('checked','checked');
-     }else{
-       $(".modal-body .economic").prop('checked',false);
-     }
-
-     $('#title').html('Update Schedule');
-     $('#submit').html('Update changes');
-     $('#sucessmessage').html('Updating data');
-     $("#submit").attr("id", "update");
-      $("#form").attr("action", "schedules/update");
+     $(".modal-body .tdname").html( name );
+     $(".modal-body .tdlogo").html('<img src="'+logo+'" width="100" height="100" alt="no logo" />');
+     
    });
 
    
-     $('body').on("click","#submit", function() {
-     if($('#vid').val() == ""){
-        $('#selname').html("Please select vehicle!");
-        return false;
-     }else if($('#oid').val() == ""){
-        $('#origin').html("Please select origin!");
-        return false;
-     }else if($('#did').val() == ""){
-        $('#destination').html("Please select destination!");
-        return false;
-     }else if(!($('.economic').is(':checked'))){
-        $('#paymenterror').html("Please select economic fare!");
+      $('body').on("click","#submit", function() {
+    
+     if($('#name').val() == ""){
+        $('#errors').html("Please insert name!");
         return false;
      }else{
         $('#submit').attr("disabled", "true");
@@ -423,30 +284,17 @@
         if (window.FormData) {
         data= new FormData();
         }
-        var v = 0;
-        if(!($('.vip').is(':checked'))){
-        v = 0;
-        }else{
-        v = 1;
-        }
-        var vid = $('#vid').val();
-        var origin = $("#oid").val();
-        var destination = $('#did').val();
-        //var arrival = $('#datetimepicker').val();
-        //var departure = $('#dp').val();
-        var vip = v;
-        var economic = $('.economic').val();
+        var name = $('#name').val();
+        var image = $("#form input[name=logo]").val();
+        var id = $('#vid').val();
         var token = $("#form input[name=_token]").val();
         var urL = $('#form').attr('action');
 
-        data.append("vid", vid);
-        data.append("origin",origin);
+        data.append("image", $('input[type=file]')[0].files[0]);
+        data.append("name",name);
         data.append("_token",token);
-        data.append("destination",destination);
-        //data.append("arrival",arrival);
-        //data.append("departure",departure);
-        data.append("vip",vip);
-        data.append("economic",economic);
+        data.append("logo",$('input[type=file]')[0].files[0].name);
+
         //alert($('input[type=file]')[0].files[0]);
 
         $.ajax({
@@ -463,20 +311,13 @@
                       $('#errors').html(response);
                       }else if(response == 1){
                       $('#submit').removeAttr('disabled');
-                      $('#vid').val('');
-                      $('#oid').val('');
-                      $('#did').val('');
-                      $('#datetimepicker').val('');
-                      $('#dp').val('');
-                      $('.vip').removeAttr('checked');
-                      $('.economic').removeAttr('checked');
-
+                      $('#name').val('');
                       displaydata(); 
                       /*$.alert("Registration Successfully! <br/>A confirmation link has been sent to your email!", {autoClose: true,closeTime: 5000,withTime: false,type: 'success',position: ['center', [-0.25, 0]], title: false,icon:'glyphicon glyphicon-ok',close: '',speed: 'normal',isOnly: true,minTop: 10,animation: false,animShow: 'fadeIn',animHide: 'fadeOut'});*/
                       $.notify({
     // options
     icon: 'glyphicon glyphicon-ok',
-    title: 'Schedule',
+    title: 'Vehicle name',
     message: ' successfully created....',
     url: '',
     target: '_blank'
@@ -540,19 +381,10 @@
      }
    });
 
-    $('body').on("click","#update", function() {
-       //alert($('#vid').val());
-     if($('#vid').val() == ""){
-        $('#selname').html("Please select vehicle!");
-        return false;
-     }else if($('#oid').val() == ""){
-        $('#origin').html("Please select origin!");
-        return false;
-     }else if($('#did').val() == ""){
-        $('#destination').html("Please select destination!");
-        return false;
-     }else if(!($('.economic').is(':checked'))){
-        $('#paymenterror').html("Please select economic fare!");
+       $('body').on("click","#update",function() {
+    //alert($('#name').val());
+     if($('#name').val() == ""){
+        $('#errors').html("Please insert name!");
         return false;
      }else{
         $('#update').attr("disabled", "true");
@@ -560,36 +392,16 @@
         if (window.FormData) {
         data= new FormData();
         }
-        var v = 0;
-        if(!($('.vip').is(':checked'))){
-        v = 0;
-        }else{
-        v = 1;
-        }
-        var vid = $('#vid').val();
-        var id = $('#id').val();
-        var origin = $("#oid").val();
-        var destination = $('#did').val();
-        //var arrival = $('#datetimepicker').val();
-        //var departure = $('#dp').val();
-        var vip = v;
-        var economic = $('.economic').val();
+        var name = $('#name').val();
+        var image = $("#form input[name=logo]").val();
+        var id = $('#vid').val();
         var token = $("#form input[name=_token]").val();
         var urL = $('#form').attr('action');
 
-        //alert(chair);
-
-        //alert(id);
-
-        data.append("vid", vid);
-        data.append("id", id);
-        data.append("origin",origin);
+        data.append("image", $('input[type=file]')[0].files[0]);
+        data.append("name",name);
         data.append("_token",token);
-        data.append("destination",destination);
-        //data.append("arrival",arrival);
-        //data.append("departure",departure);
-        data.append("vip",vip);
-        data.append("economic",economic);
+        data.append("vid",id);
         //data.append("logo",$('input[type=file]')[0].files[0].name);
 
         //alert($('input[type=file]')[0].files[0].name);
@@ -602,7 +414,7 @@
                       contentType: false,
                       beforeSend: function() { $('#loading').show(); },
                       success: function(response) {
-                      //alert(response);
+                      //alert(response);return;
                       
                       if(response != 1){
                       $('#errors').html(response);
@@ -613,7 +425,7 @@
                       $.notify({
     // options
     icon: 'glyphicon glyphicon-ok',
-    title: 'Schedule',
+    title: 'Vehicle name',
     message: ' successfully updated....',
     url: '',
     target: '_blank'
@@ -676,43 +488,17 @@
      }
    });
 
-   $('#vid').on('change', function() {
-     if($('#vid').val() == ""){
-        $('#selname').html("Please select vehicle!");
-        return false;
-     }else{
-      $('#selname').html("");
-     }
-   });
   
+   $('#name').keyup(function(){
+    if($('#name').val() == ""){
+        $('#errors').html("Please insert name!");
+        return false;
+     }else{
+      $('#errors').html("");
+     }
+   });
+
    
-
-   $('#oid').on('change', function() {
-     if($(this).val() == ""){
-        $('#origin').html("Please insert origin!");
-        return false;
-     }else{
-      $('#origin').html("");
-     }
-   });
-
-   $('#did').on('change', function() {
-     if($(this).val() == ""){
-        $('#destination').html("Please insert destination!");
-        return false;
-     }else{
-      $('#destination').html("");
-     }
-   });
-
-   $('.economic').on('click', function() {
-   if(!($('.economic').is(':checked'))){
-        $('#paymenterror').html("Please select economic fare!");
-        //return false;
-     }else{
-        $('#paymenterror').html("");
-     }
-   });
 
   });
 </script>
@@ -725,19 +511,25 @@
                 var token = $("#delform input[name=_token]").val();
                 //alert(id);
          
-                if(confirm("Are you sure you want to delete this schedule?")){
+                if(confirm("Are you sure you want to delete this vehicle name?")){
                     $.ajax({
                         type: "POST",
-                        url: "<?php echo e(url('schedules/delete')); ?>",
+                        url: "<?php echo e(url('vehiclenames/delete')); ?>",
                         data: {id:id,_token:token},
-                        success: function(){
+                        success: function(response){
+                          if(response == 1){
+                            $('.check-error').show();
+                            $('.check-error').html("That Vehicle can`t be deleted because its assigned to a registration number!");
+                            setTimeout(function() {
+                            $(".check-error").hide('blind', {}, 500)
+                            }, 5000);
+                          }else{
                            //alert(response);
-                           
                             $(".del"+id).fadeOut('slow'); 
                             $.notify({
     // options
     icon: 'glyphicon glyphicon-ok',
-    title: 'Schedule',
+    title: 'Vehicle name',
     message: ' successfully deleted....',
     url: '',
     target: '_blank'
@@ -780,7 +572,7 @@
         '<a href="{3}" target="{4}" data-notify="url"></a>' +
     '</div>' 
 });
-                        
+                        }
                         },
                         error: function(xhr,thrownError) {
                        console.log(xhr.statusText);
@@ -798,10 +590,7 @@
                 }else{
                     //return false;
         }
-            });   
-
-
-     
+            });       
   });
    </script>
 
