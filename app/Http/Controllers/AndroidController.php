@@ -8,11 +8,15 @@ use Mail;
 
 use App\Mail\Book;
 
+use App\Mail\BookVehicle;
+
 use App\Carhire;
 
 use App\Vehicle;
 
 use App\Schedule;
+
+use App\Seatnaming;
 
 use App\Vehiclename;
 
@@ -55,8 +59,14 @@ class AndroidController extends Controller
                                  $join->on('schedules.destination_id', '=', 'des.did');
                             })
                             ->leftJoin('payments','vehicles.id','=','payments.vehicle_id')
-                            ->where('origin.oname',$request->origin)
-                            ->where('des.dname',$request->destination)
+                            ->where(function ($query) use ($request) {
+                             $query->where('origin.oname',$request->origin)
+                              ->orWhere('origin.oname',$request->destination);
+                            })
+                            ->where(function ($query) use ($request) {
+                                $query->where('des.dname',$request->destination)
+                                      ->orWhere('des.dname',$request->origin);
+                            })
                             ->where('vehiclenames.type','Travel')
                             ->distinct('vehiclenames.name')
                             ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure','firstclass as vipprice', 'economic as economicfare')
@@ -76,8 +86,14 @@ class AndroidController extends Controller
                                  $join->on('schedules.destination_id', '=', 'des.did');
                             })
                             ->leftJoin('payments','vehicles.id','=','payments.vehicle_id')
-                            ->where('origin.oname',$request->origin)
-                            ->where('des.dname',$request->destination)
+                            ->where(function ($query) use ($request) {
+                            $query->where('origin.oname',$request->origin)
+                              ->orWhere('origin.oname',$request->destination);
+                            })
+                            ->where(function ($query) use ($request) {
+                                $query->where('des.dname',$request->destination)
+                                      ->orWhere('des.dname',$request->origin);
+                            })
                             ->where('vehiclenames.type','SGR')
                             ->distinct('vehiclenames.name')
                             ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure','firstclass as vipprice', 'economic as economicfare')
@@ -100,8 +116,14 @@ class AndroidController extends Controller
                                  $join->on('schedules.destination_id', '=', 'des.did');
                             })
                             ->leftJoin('payments','vehicles.id','=','payments.vehicle_id')
-                            ->where('origin.oname',$request->origin)
-                            ->where('des.dname',$request->destination)
+                            ->where(function ($query) use ($request) {
+                            $query->where('origin.oname',$request->origin)
+                              ->orWhere('origin.oname',$request->destination);
+                            })
+                            ->where(function ($query) use ($request) {
+                                $query->where('des.dname',$request->destination)
+                                      ->orWhere('des.dname',$request->origin);
+                            })
                             ->where('vehiclenames.type','Airline')
                             ->distinct('vehiclenames.name')
                             ->select('vehiclenames.name', 'vehiclenames.logo as imageUrl', 'vehicles.type', 'vehicles.capacity', 'schedules.vehicle_id as vehicleid', 'schedules.organization_id as organization', 'firstclass_apply as firstclassapply', 'economic_apply', 'origin.oname', 'origin.oid', 'des.did', 'des.dname', 'arrival', 'departure','firstclass as vipprice', 'economic as economicfare', 'children as childrenfare', 'business as businessfare')
@@ -109,6 +131,58 @@ class AndroidController extends Controller
 
         
         print(json_encode($vehicles));
+    }
+
+    public function getSeats(Request $request)
+    {
+        $date = $request->date;
+        $time = $request->time;
+        $newdate = strtotime($date.' '.$time);
+        $datetime = date('Y-m-d H:i:s', $newdate);
+
+        $booked = array();
+
+        $seatnamings = Seatnaming::where('organization_id',$request->organization_id)->get();
+
+        foreach ($seatnamings as $seatnaming) {
+            $bookedseats = Booking::where('origin',$request->origin)
+                         ->where('destination',$request->destination)
+                         ->where('travel_date',$datetime)
+                         ->where('type',$request->type)
+                         ->where('vehicle_id',$request->vehicle)
+                         ->where('seatno',$seatnaming->seatno)
+                         ->select('seatno')
+                         ->first();
+
+            if(count($bookedseats) > 0){
+            //$booked[0+$i] = $row['seatno'];
+            $booked['seatno'] = $seatnaming->seatno;
+            //$booked[1+$i] = $row['vip'];
+            $booked['vip'] = $seatnaming->vip;
+            //$booked[2+$i] = $row['business'];
+            $booked['business'] = $seatnaming->business;
+            //$booked[3+$i] = $row['economy'];
+            $booked['economy'] = $seatnaming->economy;
+            //$booked[4+$i] = "booked";
+            $booked['status'] = "booked";
+            $flag[] = $booked;
+            }else{
+            //$booked[0+$i] = $row['seatno'];
+            $booked['seatno'] = $seatnaming->seatno;
+            //$booked[1+$i] = $row['vip'];
+            $booked['vip'] = $seatnaming->vip;
+            //$booked[2+$i] = $row['business'];
+            $booked['business'] = $seatnaming->business;
+            //$booked[3+$i] = $row['economy'];
+            $booked['economy'] = $seatnaming->economy;
+            //$booked[4+$i] = "available";
+            $booked['status'] = "available";
+            $flag[] = $booked; 
+            }
+        }
+
+        
+        print(json_encode($flag));
     }
 
     public function getEvents()
@@ -131,6 +205,104 @@ class AndroidController extends Controller
                             ->get();
         
         return json_encode($hotels);
+    }
+
+
+    public function getHotelRooms(Request $request)
+    {
+        //echo date('Y-m-d H:i:s');
+
+        $date = $request->date;
+        $time = $request->time;
+        $date1 = $request->checkoutdate;
+        $time1 = $request->checkouttime;
+        $newdate = strtotime($date.' '.$time);
+        $datetime = date('Y-m-d H:i:s', $newdate);
+
+        $flag = array();
+
+        $newdate1  = strtotime($date1.' '.$time1);
+        $datetime1 = date('Y-m-d H:i:s', $newdate1);
+
+        $branch = Branch::where('name',$request->area)->first();
+
+        $bookedrooms = Booking::where('bookings.branch_id',$branch->id)
+                         ->leftJoin('rooms','bookings.room_id','=','rooms.id')
+                         ->where('check_out',$datetime1)
+                         ->where('travel_date',$datetime)
+                         ->groupBy('roomtype_id')
+                         ->count();
+
+        //$flag['bookedrooms'] = $bookedrooms;
+
+        if(($request->adults == "" || $request->adults == null) && ($request->children != "" || $request->children != null)){
+          $rooms = Room::leftJoin("roomtypes","rooms.roomtype_id","=","roomtypes.id")
+                            ->leftJoin('branches','rooms.branch_id','=','branches.id')
+                            ->leftJoin("organizations","rooms.organization_id","=","organizations.id")
+                            ->leftJoin(DB::raw('(select COALESCE(mon,0) as mon,COALESCE(tue,0) as tue,COALESCE(wen,0) as wen,COALESCE(thur,0) as thur,COALESCE(fri,0) as fri,COALESCE(sat,0) as sat,COALESCE(sun,0) as sun,branch_id,roomtype_id from pricings where branch_id='.$branch->id.') as pricings'), function($join){
+                                $join->on('roomtypes.id', '=', 'pricings.roomtype_id');
+                            })
+                            ->leftJoin(DB::raw('(select count(*) as booked, room_id from bookings left join rooms on bookings.room_id = rooms.id where bookings.branch_id='.$branch->id.' and check_out<="'.$datetime1.'" and travel_date>="'.$datetime.'" group by roomtype_id, room_id) as bookings'), function($join){
+                                $join->on('rooms.id', '=', 'bookings.room_id');
+                            })
+                            ->where('rooms.branch_id',$branch->id)
+                            ->where('rooms.children',$request->children)
+                            ->select('rooms.id as id', 'rooms.roomtype_id', 'roomtypes.name as name', 'rooms.organization_id as organization', 'rooms.image as imageUrl', 'rooms.adults', 'rooms.children','rooms.room_count as availability','pricings.mon','pricings.tue','pricings.wen','pricings.thur','pricings.fri','pricings.sat','pricings.sun','pricings.children as childamount','bookings.booked','organizations.name as hotel')
+                            ->get();
+
+          $flag['rooms'] = $rooms;
+        }else if(($request->adults != "" || $request->adults != null) && ($request->children == "" || $request->children == null)){
+          $rooms = Room::leftJoin("roomtypes","rooms.roomtype_id","=","roomtypes.id")
+                            ->leftJoin('branches','rooms.branch_id','=','branches.id')
+                            ->leftJoin("organizations","rooms.organization_id","=","organizations.id")
+                            ->leftJoin(DB::raw('(select COALESCE(mon,0) as mon,COALESCE(tue,0) as tue,COALESCE(wen,0) as wen,COALESCE(thur,0) as thur,COALESCE(fri,0) as fri,COALESCE(sat,0) as sat,COALESCE(sun,0) as sun,branch_id,roomtype_id from pricings where branch_id='.$branch->id.') as pricings'), function($join){
+                                $join->on('roomtypes.id', '=', 'pricings.roomtype_id');
+                            })
+                            ->leftJoin(DB::raw('(select count(*) as booked, room_id from bookings left join rooms on bookings.room_id = rooms.id where bookings.branch_id='.$branch->id.' and check_out<="'.$datetime1.'" and travel_date>="'.$datetime.'" group by roomtype_id, room_id) as bookings'), function($join){
+                                $join->on('rooms.id', '=', 'bookings.room_id');
+                            })
+                            ->where('rooms.branch_id',$branch->id)
+                            ->where('rooms.adults',$request->adults)
+                            ->select('rooms.id as id', 'rooms.roomtype_id', 'roomtypes.name as name', 'rooms.organization_id as organization', 'rooms.image as imageUrl', 'rooms.adults', 'rooms.children','rooms.room_count as availability','pricings.mon','pricings.tue','pricings.wen','pricings.thur','pricings.fri','pricings.sat','pricings.sun','pricings.children as childamount','bookings.booked','organizations.name as hotel')
+                            ->get();
+
+          $flag['rooms'] = $rooms;
+        }else if(($request->adults == "" || $request->adults == null) && ($request->children == "" || $request->children == null)){
+          $rooms = Room::leftJoin("roomtypes","rooms.roomtype_id","=","roomtypes.id")
+                            ->leftJoin('branches','rooms.branch_id','=','branches.id')
+                            ->leftJoin("organizations","rooms.organization_id","=","organizations.id")
+                            ->leftJoin(DB::raw('(select COALESCE(mon,0) as mon,COALESCE(tue,0) as tue,COALESCE(wen,0) as wen,COALESCE(thur,0) as thur,COALESCE(fri,0) as fri,COALESCE(sat,0) as sat,COALESCE(sun,0) as sun,branch_id,roomtype_id from pricings where branch_id='.$branch->id.') as pricings'), function($join){
+                                $join->on('roomtypes.id', '=', 'pricings.roomtype_id');
+                            })
+                            ->leftJoin(DB::raw('(select count(*) as booked, room_id from bookings left join rooms on bookings.room_id = rooms.id where bookings.branch_id='.$branch->id.' and check_out<="'.$datetime1.'" and travel_date>="'.$datetime.'" group by roomtype_id, room_id) as bookings'), function($join){
+                                $join->on('rooms.id', '=', 'bookings.room_id');
+                            })
+                            ->where('rooms.branch_id',$branch->id)
+                            ->select('rooms.id as id', 'rooms.roomtype_id', 'roomtypes.name as name', 'rooms.organization_id as organization', 'rooms.image as imageUrl', 'rooms.adults', 'rooms.children','rooms.room_count as availability','pricings.mon','pricings.tue','pricings.wen','pricings.thur','pricings.fri','pricings.sat','pricings.sun','pricings.children as childamount','bookings.booked','organizations.name as hotel')
+                            ->get();
+
+          $flag['rooms'] = $rooms;
+        }else if(($request->adults != "" || $request->adults != null) && ($request->children != "" || $request->children != null)){
+
+        $rooms = Room::leftJoin("roomtypes","rooms.roomtype_id","=","roomtypes.id")
+                            ->leftJoin('branches','rooms.branch_id','=','branches.id')
+                            ->leftJoin("organizations","rooms.organization_id","=","organizations.id")
+                            ->leftJoin(DB::raw('(select COALESCE(mon,0) as mon,COALESCE(tue,0) as tue,COALESCE(wen,0) as wen,COALESCE(thur,0) as thur,COALESCE(fri,0) as fri,COALESCE(sat,0) as sat,COALESCE(sun,0) as sun,branch_id,roomtype_id from pricings where branch_id='.$branch->id.') as pricings'), function($join){
+                                $join->on('roomtypes.id', '=', 'pricings.roomtype_id');
+                            })
+                            ->leftJoin(DB::raw('(select count(*) as booked, room_id from bookings left join rooms on bookings.room_id = rooms.id where bookings.branch_id='.$branch->id.' and check_out<="'.$datetime1.'" and travel_date>="'.$datetime.'" group by roomtype_id, room_id) as bookings'), function($join){
+                                $join->on('rooms.id', '=', 'bookings.room_id');
+                            })
+                            ->where('rooms.branch_id',$branch->id)
+                            ->where('rooms.children',$request->children)
+                            ->where('rooms.adults',$request->adults)
+                            ->select('rooms.id as id', 'rooms.roomtype_id', 'roomtypes.name as name', 'rooms.organization_id as organization', 'rooms.image as imageUrl', 'rooms.adults', 'rooms.children','rooms.room_count as availability','pricings.mon','pricings.tue','pricings.wen','pricings.thur','pricings.fri','pricings.sat','pricings.sun','pricings.children as childamount','bookings.booked','organizations.name as hotel')
+                            ->get();
+
+        $flag['rooms'] = $rooms;
+    }
+        
+        return json_encode($rooms);
     }
 
     public function getRooms(Request $request)
@@ -303,4 +475,92 @@ class AndroidController extends Controller
         return json_encode($data);
         }
         }
+
+        public function bookvehicle(Request $request)
+        {
+        $data = array();
+
+        $organization = Organization::find($request->organization);
+        $vehicle = Vehicle::leftJoin("vehiclenames","vehicles.vehiclename_id","=","vehiclenames.id")
+                          ->where("vehicles.id",$request->vehicle)
+                          ->select("vehiclenames.name","regno")
+                          ->first();
+
+        $booking = Booking::orderBy('id','DESC')->first();
+
+        $firstname = explode(', ', str_replace(array('[',']'),'',$request->firstname));
+        $lastname = explode(', ', str_replace(array('[',']'),'',$request->lastname));
+        $email = explode(', ', str_replace(array('[',']'),'',$request->email));
+        $phone = explode(', ', str_replace(array('[',']'),'',$request->phone));
+        $idno = explode(', ', str_replace(array('[',']'),'',$request->idno));
+        $paymentmode = $request->paymentmode;
+        $seat = explode(', ', str_replace(array('[',']'),'',$request->seat));
+        /*$amount = preg_replace("/[^0-9.]/", "", explode(',', str_replace(array('[',']'),'',$request->amount)));  */ 
+
+        //return $email[1];
+
+        $newdate = strtotime($request->date.' '.$request->time);
+        $datetime = date('Y-m-d H:i:s', $newdate);
+    
+
+        $ret = '';
+        $bid = $booking->id+1;
+        foreach (explode(' ', $organization->name) as $word){
+        if($word == null){
+        $ret .= strtoupper($str[0]); 
+        }else{
+        $ret .= strtoupper($word[0]);
+        }
+        }
+
+        for($i=0; $i<count($seat); $i++){
+
+        $ticketnumber = '#' . $ret . date('ydm'). str_pad(($bid+$i), 4, '0', STR_PAD_LEFT);
+
+        $amount = 0.00;
+
+        $query = Seatnaming::join('payments','seatnamings.vehicle_id','=','payments.vehicle_id')->where('seatno',$seat[$i])->where('seatnamings.vehicle_id',$request->vehicle)->select('firstclass','vip','payments.economic as economic','seatnamings.economy as is_economic','payments.business as business','seatnamings.business as is_business')->first();
+
+        if($query->vip == 1){
+           $amount = $query->firstclass;
+        }else if($query->is_business == 1){
+           $amount = $query->business;
+        }else if($query->is_economic == 1){
+           $amount = $query->economic;
+        }
+
+        Mail::to($email[$i])->send(new BookVehicle($request->date,$request->time,$paymentmode,$amount,$seat[$i],$vehicle,$firstname[$i],$lastname[$i],$idno[$i],$phone[$i],$ticketnumber));
+
+        if( count(Mail::failures()) == 0 ) {
+
+        $booking = new Booking;
+        $booking->firstname = $firstname[$i];
+        $booking->lastname = $lastname[$i];
+        $booking->email = $email[$i];
+        $booking->phone = $phone[$i];
+        $booking->id_number = $idno[$i];
+        $booking->ticketno = $ticketnumber;
+        $booking->organization_id = $organization->id;
+        $booking->amount = str_replace(',','',$amount);
+        $booking->seatno = $seat[$i];
+        $booking->mode_of_payment = $paymentmode;
+        $booking->type = $request->type;
+        $booking->travel_date = $datetime;
+        $booking->origin = $request->origin;
+        $booking->destination = $request->destination;
+        $booking->status = 'approved';
+        $booking->date = date('Y-m-d');
+        $booking->vehicle_id = $request->vehicle;
+        $booking->created_at = date('Y-m-d H:i:s');
+        $booking->updated_at = date('Y-m-d H:i:s');
+        $booking->save();
+        
+        $data['success'] = "Book Successful";
+        echo json_encode($data);
+        }else{
+        $data['success'] = "error";
+        echo json_encode($data);
+        }
+        }
+}
 }

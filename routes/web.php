@@ -22,9 +22,11 @@ Route::get('get_locations', 'AndroidController@getLocations');
 Route::get('get_routes', 'AndroidController@getRoutes');
 Route::get('get_branches', 'AndroidController@getBranches');
 Route::get('get_hotels', 'AndroidController@getHotels');
+Route::get('get_hotel_rooms', 'AndroidController@getHotelRooms');
 Route::get('get_rooms', 'AndroidController@getRooms');
 Route::get('hire_car', 'AndroidController@hireCar');
-
+Route::get('get_seats', 'AndroidController@getSeats');
+Route::get('book', 'AndroidController@bookvehicle');
 
 Route::post('report/events', 'ReportsController@events');
 
